@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="bgColor" format="reference" />
+    <attr name="subBgColor" format="reference" />
+    <attr name="textColor" format="reference" />
+    <attr name="bgWall" format="reference" />
+    <declare-styleable name="FontTextView">
+        <attr name="font_name" format="string" />
+    </declare-styleable>
+</resources>
