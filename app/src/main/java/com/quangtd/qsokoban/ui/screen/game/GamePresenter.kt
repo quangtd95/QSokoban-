@@ -1,5 +1,6 @@
 package com.quangtd.qsokoban.ui.screen.game
 
+import com.quangtd.qsokoban.domain.game.enums.GameDirection
 import com.quangtd.qsokoban.domain.game.gamemanager.GameManager
 import com.quangtd.qsokoban.domain.game.gameview.GamePanel
 import com.quangtd.qsokoban.domain.game.thread.GameThread
@@ -40,20 +41,16 @@ class GamePresenter : BasePresenter<GameView>() {
         resumeGame()
         when (direction) {
             OnSwipeListener.Direction.up -> {
-//                gameManager?.action(GameDirection.DOWN)
-                LogUtils.e("up")
+                gameManager.action(GameDirection.UP)
             }
             OnSwipeListener.Direction.down -> {
-//                gameManager?.action(GameDirection.UP)
-                LogUtils.e("down")
+                gameManager.action(GameDirection.DOWN)
             }
             OnSwipeListener.Direction.left -> {
-//                gameManager?.action(GameDirection.LEFT)
-                LogUtils.e("left")
+                gameManager.action(GameDirection.LEFT)
             }
             OnSwipeListener.Direction.right -> {
-//                gameManager?.action(GameDirection.RIGHT)
-                LogUtils.e("right")
+                gameManager.action(GameDirection.RIGHT)
             }
         }
     }

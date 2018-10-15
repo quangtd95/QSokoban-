@@ -3,6 +3,7 @@ package com.quangtd.qsokoban.domain.game.gamemanager
 import android.content.Context
 import com.google.gson.Gson
 import com.quangtd.qsokoban.common.CommonConstants.Companion.MAP_NAME_TEMPLATE
+import com.quangtd.qsokoban.domain.game.enums.GameDirection
 import com.quangtd.qsokoban.domain.game.enums.GameState
 import com.quangtd.qsokoban.domain.model.*
 import com.quangtd.qsokoban.util.ScreenUtils
@@ -12,7 +13,6 @@ import com.quangtd.qsokoban.util.ScreenUtils
  * on 10/14/2018.
  */
 class GameManager(private var level: Level) : IGameManager {
-
 
     private lateinit var gameState: GameState
     private lateinit var map: SokobanMap
@@ -70,7 +70,7 @@ class GameManager(private var level: Level) : IGameManager {
                     'W' -> {
                         val wall = Wall(row, col)
                         wall.widthCell = widthCell
-                        wallList.add(Wall(row, col))
+                        wallList.add(wall)
                     }
                     'P' -> {
                         player = Player(row, col, map)
@@ -79,6 +79,7 @@ class GameManager(private var level: Level) : IGameManager {
 
                     'B' -> {
                         val box = Box(row, col)
+                        box.map = map
                         box.widthCell = widthCell
                         boxList.add(box)
                     }
@@ -110,5 +111,9 @@ class GameManager(private var level: Level) : IGameManager {
 
     override fun update() {
         player.update()
+    }
+
+    override fun action(direction: GameDirection) {
+        player.move(direction)
     }
 }

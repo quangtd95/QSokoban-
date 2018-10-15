@@ -1,5 +1,6 @@
 package com.quangtd.qsokoban.domain.game.gamemanager
 
+import com.quangtd.qsokoban.domain.game.enums.GameDirection
 import com.quangtd.qsokoban.domain.model.SokobanMap
 
 /**
@@ -9,4 +10,5 @@ import com.quangtd.qsokoban.domain.model.SokobanMap
 interface IGameManager {
     fun getSokobanMap(): SokobanMap
     fun update()
+    fun action(direction: GameDirection)
 }

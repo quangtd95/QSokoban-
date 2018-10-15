@@ -9,7 +9,7 @@ public class Animation {
     private int currentFrame;
     private int numFrames;
     private int count;
-    private int delay;
+    private int delay = 10;
     private int timesPlayed;
     private int[] delays;
 
@@ -18,26 +18,23 @@ public class Animation {
     }
 
     public void setFrames(ArrayList<Bitmap> frames) {
-        setFrames(frames, 2);
-    }
-
-    public void setFrames(ArrayList<Bitmap> frames, int delay) {
         this.frames = frames;
         currentFrame = 0;
         count = 0;
         timesPlayed = 0;
-        this.delay = delay;
         this.delays = null;
         numFrames = frames.size();
     }
 
+    public void setFrames(ArrayList<Bitmap> frames, int delay) {
+        setFrames(frames);
+        this.delay = delay;
+
+    }
+
     public void setFrames(ArrayList<Bitmap> frames, int[] delays) {
-        this.frames = frames;
+        setFrames(frames);
         this.delays = delays;
-        currentFrame = 0;
-        count = 0;
-        timesPlayed = 0;
-        numFrames = frames.size();
     }
 
     public void setFrame(int i) {
@@ -89,6 +86,10 @@ public class Animation {
 
     public boolean hasPlayed(int i) {
         return timesPlayed == i;
+    }
+
+    public void setDelay(int delay) {
+        this.delay = delay;
     }
 
 

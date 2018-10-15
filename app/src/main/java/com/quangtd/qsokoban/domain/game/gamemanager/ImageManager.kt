@@ -9,7 +9,7 @@ import com.quangtd.qsokoban.util.LoadImageUtils
  * Created by quang.td95@gmail.com
  * on 10/14/2018.
  */
-class ImageManager private constructor() {
+class ImageManager private constructor()  {
     companion object {
         private var ins: ImageManager? = null
 
@@ -21,10 +21,10 @@ class ImageManager private constructor() {
         }
     }
 
-    var ground: Bitmap? = null
-    var box: Bitmap? = null
-    var wall: Bitmap? = null
-    var destination: Bitmap? = null
+    lateinit var ground: Bitmap
+    lateinit var box: Bitmap
+    lateinit var wall: Bitmap
+    lateinit var destination: Bitmap
     var playerIdleLeft: ArrayList<Bitmap> = ArrayList()
     var playerIdleRight: ArrayList<Bitmap> = ArrayList()
     var playerIdleUp: ArrayList<Bitmap> = ArrayList()

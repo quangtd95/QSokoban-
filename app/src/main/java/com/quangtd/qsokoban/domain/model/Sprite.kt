@@ -9,10 +9,10 @@ import android.graphics.PointF
  * on 9/2/2018.
  */
 abstract class Sprite(
-        protected var x: Int = 0,
-        protected var y: Int = 0,
-        protected var xF: Float = 0F,
-        protected var yF: Float = 0F
+        var x: Int = 0,
+        var y: Int = 0,
+        var xF: Float = 0F,
+        var yF: Float = 0F
 ) {
     init {
         xF = x.toFloat()
