@@ -5,8 +5,10 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.view.SurfaceHolder
+import com.quangtd.qsokoban.domain.game.enums.RenderState
 import com.quangtd.qsokoban.domain.game.gamemanager.GameManager
 import com.quangtd.qsokoban.domain.model.SokobanMap
+import com.quangtd.qsokoban.util.ScreenUtils
 
 /**
  * Created by quang.td95@gmail.com
@@ -33,6 +35,7 @@ class GamePanel(var context: Context,
         paintWall = Paint(Paint.FILTER_BITMAP_FLAG)
         paintDest = Paint(Paint.FILTER_BITMAP_FLAG)
         paintBox = Paint(Paint.FILTER_BITMAP_FLAG)
+        widthScreen = ScreenUtils.getWidthScreen(context)
 
     }
 
@@ -47,16 +50,19 @@ class GamePanel(var context: Context,
     }
 
     private fun draw(canvas: Canvas) {
+        canvas.save()
+        canvas.translate((widthScreen - map.cols * map.widthCell) / 2, map.widthCell)
         drawMap(canvas)
         drawPlayer(canvas)
+        canvas.restore()
     }
 
     private fun drawMap(canvas: Canvas) {
         drawBackground(canvas)
         drawGround(canvas)
         drawWall(canvas)
-        drawBox(canvas)
         drawDest(canvas)
+        drawBox(canvas)
     }
 
     private fun drawDest(canvas: Canvas) {
@@ -78,7 +84,9 @@ class GamePanel(var context: Context,
     }
 
     private fun drawGround(canvas: Canvas) {
-        //TODO: draw ground
+        map.groundList.forEach { ground ->
+            ground.draw(canvas, paintGround)
+        }
     }
 
     private fun drawBackground(canvas: Canvas) {
@@ -87,5 +95,9 @@ class GamePanel(var context: Context,
 
     private fun drawPlayer(canvas: Canvas) {
         map.player.draw(canvas, paintPlayer)
+    }
+
+    fun bindRenderCalBack(renderCallback: RenderState.RenderCallback) {
+
     }
 }

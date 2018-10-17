@@ -4,45 +4,69 @@
     android:layout_height="match_parent"
     android:background="@color/bgGame">
 
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/_40sdp"
-        android:layout_alignTop="@+id/next"
-        android:layout_marginStart="17dp"
-        android:layout_toEndOf="@+id/menu"
-        android:gravity="center"
-        android:textColor="@color/colorWhite"
-        android:textSize="@dimen/_20sdp" />
+    <LinearLayout
+        android:id="@+id/groupTop"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_56sdp"
+        android:orientation="horizontal">
 
-    <ImageButton
-        android:id="@+id/next"
-        android:layout_width="@dimen/_30sdp"
-        android:layout_height="@dimen/_30sdp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="@dimen/_5sdp"
-        android:background="@color/colorGrayTransparent"
-        android:scaleType="centerInside"
-        android:src="@mipmap/ic_launcher" />
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
 
+            <TextView
+                android:id="@+id/txtMove"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:text="100"
+                android:textSize="@dimen/_25sdp" />
 
-    <ImageButton
-        android:id="@+id/menu"
-        android:layout_width="@dimen/_40sdp"
-        android:layout_height="@dimen/_40sdp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_margin="@dimen/_5sdp"
-        android:background="@color/colorGrayTransparent"
-        android:padding="@dimen/_10sdp"
-        android:src="@mipmap/ic_launcher" />
+            <TextView
+                android:id="@+id/lbMove"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/txtMove"
+                android:layout_centerHorizontal="true"
+                android:text="MOVE"
+                android:textSize="@dimen/_10sdp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/_5sdp">
+
+            <TextView
+                android:id="@+id/txtTarget"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:text="200"
+                android:textSize="@dimen/_25sdp" />
+
+            <TextView
+                android:id="@+id/lbTarget"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/txtTarget"
+                android:layout_centerHorizontal="true"
+                android:text="TARGET"
+                android:textSize="@dimen/_10sdp" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
 
     <com.quangtd.qsokoban.ui.sokoban.SokobanView
         android:id="@+id/sokobanView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/next"
+        android:layout_below="@id/groupTop"
         android:layout_marginTop="@dimen/_10sdp" />
 
 

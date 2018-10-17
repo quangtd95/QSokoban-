@@ -16,7 +16,18 @@ class Box(x: Int, y: Int) : Sprite(x, y) {
     private val matrix = Matrix()
     lateinit var map: SokobanMap
     private val imageManager = ImageManager.getInstance()
+    private var completeFlg = false
+    var nextPoint = Point()
+
     override fun update() {
+        completeFlg = false
+        map.destList.forEach { dest ->
+            if (dest.x == x && dest.y == y) completeFlg = true
+        }
+    }
+
+    public fun isDone(): Boolean {
+        return completeFlg
     }
 
     override fun draw(canvas: Canvas, paint: Paint) {
@@ -53,8 +64,14 @@ class Box(x: Int, y: Int) : Sprite(x, y) {
         map.wallList.forEach { it ->
             if (it.x == checkPoint.x && it.y == checkPoint.y) return false
         }
+        nextPoint = checkPoint
         return true
+    }
 
-
+    public fun saveNewLocation() {
+        this.x = nextPoint.x
+        this.y = nextPoint.y
+        this.xF = x.toFloat()
+        this.yF = y.toFloat()
     }
 }

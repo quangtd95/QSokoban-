@@ -9,4 +9,6 @@ import com.quangtd.qsokoban.mvpbase.IBaseView
  */
 interface GameView : IBaseView {
     fun getSurfaceHolder(): SurfaceHolder
+    fun showWinGameAlert()
+    fun showLoseGameAlert()
 }

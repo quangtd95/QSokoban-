@@ -8,15 +8,20 @@ import java.util.*
  * on 10/14/2018.
  */
 data class SokobanMap(
-        @SerializedName("m")
+        @SerializedName("map")
         var mapData: Array<String>,
-        @SerializedName("s")
+        @SerializedName("solution")
         var solution: String
 ) {
     lateinit var player: Player
     lateinit var wallList: ArrayList<Wall>
     lateinit var boxList: ArrayList<Box>
+    lateinit var groundList: ArrayList<Ground>
     lateinit var destList: ArrayList<Destination>
+    var rows: Int = 0
+    var cols: Int = 0
+    var widthCell: Float = 0F
+
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

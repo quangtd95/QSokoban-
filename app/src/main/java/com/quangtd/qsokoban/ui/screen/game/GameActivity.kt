@@ -1,5 +1,6 @@
 package com.quangtd.qsokoban.ui.screen.game
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.view.GestureDetectorCompat
 import android.view.MotionEvent
@@ -9,12 +10,14 @@ import com.quangtd.qsokoban.R
 import com.quangtd.qsokoban.domain.model.Level
 import com.quangtd.qsokoban.mvpbase.BaseActivity
 import com.quangtd.qsokoban.ui.component.OnSwipeListener
+import com.quangtd.qsokoban.util.DialogUtils
 import com.quangtd.qsokoban.util.LogUtils
 import kotlinx.android.synthetic.main.activity_game.*
 
 class GameActivity : BaseActivity<GameView, GamePresenter>(), GameView, SurfaceHolder.Callback {
 
     private lateinit var mDetector: GestureDetectorCompat
+    private lateinit var level: Level
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +28,7 @@ class GameActivity : BaseActivity<GameView, GamePresenter>(), GameView, SurfaceH
     }
 
     private fun initValues() {
-
+        level = Level(id = intent.getIntExtra("level", 1))
     }
 
     private fun initViews() {
@@ -56,19 +59,18 @@ class GameActivity : BaseActivity<GameView, GamePresenter>(), GameView, SurfaceH
     override fun surfaceCreated(p0: SurfaceHolder?) {
         LogUtils.e("surfaceCreated")
         if (!isPause) {
-//            getPresenter(this@GameActivity).setUpGame(level!!)
-//            if (getPresenter(this).canNext()) {
-            next.visibility = View.VISIBLE
-//                next.setOnClickListener {
-//                    moveNextLevel()
-//                }
-//            } else {
-//                next.visibility = View.INVISIBLE
-//            }
+            getPresenter(this@GameActivity).setUpGame(level)
+            /*if (getPresenter(this).canNext()) {
+                next.visibility = View.VISIBLE
+                next.setOnClickListener {
+                    moveNextLevel()
+                }
+            } else {
+                next.visibility = View.INVISIBLE
+            }*/
         } else {
             getPresenter(this).resumeGame()
         }
-        getPresenter(this).setUpGame(Level(id = 1))
     }
 
     override fun onStop() {
@@ -102,6 +104,30 @@ class GameActivity : BaseActivity<GameView, GamePresenter>(), GameView, SurfaceH
     override fun onDestroy() {
         getPresenter(this).stopGame()
         super.onDestroy()
+    }
+
+    override fun showWinGameAlert() {
+        runOnUiThread {
+            uiChangeListener()
+            DialogUtils.showError(this, "you win") {
+                moveNextLevel()
+            }
+        }
+    }
+
+    private fun moveNextLevel() {
+        val intent = Intent(this, GameActivity::class.java)
+        intent.putExtra("level", level.id + 1)
+        startActivity(intent)
+        finish()
+    }
+
+    override fun showLoseGameAlert() {
+        runOnUiThread {
+            getPresenter(this).pauseGame()
+            uiChangeListener()
+            DialogUtils.showError(this, "you loose") {}
+        }
     }
 
 }

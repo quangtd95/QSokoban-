@@ -20,7 +20,7 @@ interface IBaseView {
     }
 
     fun showErrorDialog(message: String) {
-        DialogUtils.showError(getViewContext(), message)
+        DialogUtils.showError(getViewContext(), message){}
     }
 
     fun startActivity(clazz: Class<*>, bundle: Bundle)

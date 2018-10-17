@@ -5,7 +5,9 @@ import com.google.gson.Gson
 import com.quangtd.qsokoban.common.CommonConstants.Companion.MAP_NAME_TEMPLATE
 import com.quangtd.qsokoban.domain.game.enums.GameDirection
 import com.quangtd.qsokoban.domain.game.enums.GameState
+import com.quangtd.qsokoban.domain.game.enums.RenderState
 import com.quangtd.qsokoban.domain.model.*
+import com.quangtd.qsokoban.util.LogUtils
 import com.quangtd.qsokoban.util.ScreenUtils
 
 /**
@@ -20,6 +22,7 @@ class GameManager(private var level: Level) : IGameManager {
     private var wallList = ArrayList<Wall>()
     private var boxList = ArrayList<Box>()
     private var destList = ArrayList<Destination>()
+    private var groundList = ArrayList<Ground>()
 
     private var rows = 0
     private var cols = 0
@@ -62,42 +65,59 @@ class GameManager(private var level: Level) : IGameManager {
         widthCell = ScreenUtils.getWidthScreen(context).toFloat() / ((if (rows > cols) rows else cols) + 2)
 
         map.mapData.forEachIndexed { row, rowData ->
-            if (cols < rowData.length) {
-                cols = rowData.length
-            }
             rowData.forEachIndexed { col, colData ->
                 when (colData) {
-                    'W' -> {
-                        val wall = Wall(row, col)
+                    '#' -> {
+                        val wall = Wall(col, row)
                         wall.widthCell = widthCell
                         wallList.add(wall)
                     }
-                    'P' -> {
-                        player = Player(row, col, map)
+                    '@' -> {
+                        player = Player(col, row, map)
                         player.widthCell = widthCell
                     }
 
-                    'B' -> {
-                        val box = Box(row, col)
+                    '$' -> {
+                        val box = Box(col, row)
                         box.map = map
                         box.widthCell = widthCell
                         boxList.add(box)
                     }
-                    'X' -> {
-                        val destination = Destination(row, col)
+                    '.' -> {
+                        val destination = Destination(col, row)
                         destination.widthCell = widthCell
                         destList.add(destination)
+                    }
+                    '+' -> {
+                        val destination = Destination(col, row)
+                        destination.widthCell = widthCell
+                        destList.add(destination)
+                        player = Player(col, row, map)
+                        player.widthCell = widthCell
                     }
                     else -> {
                         // do-nothing
                     }
                 }
+                when (colData) {
+                    '@', '$', '.', '+', ' ' -> {
+                        if (rowData.substring(0, col).contains("#") && rowData.substring(col, rowData.length).contains("#")) {
+                            groundList.add(Ground(col, row).apply {
+                                this.widthCell = this@GameManager.widthCell
+                            })
+                        }
+                    }
+                }
             }
         }
+        map.groundList = groundList
         map.boxList = boxList
         map.destList = destList
         map.wallList = wallList
         map.player = player
+        map.rows = rows
+        map.cols = cols
+        map.widthCell = widthCell
     }
 
     fun forceChangeGameState(gameState: GameState) {
@@ -111,9 +131,29 @@ class GameManager(private var level: Level) : IGameManager {
 
     override fun update() {
         player.update()
+        map.boxList.forEach {
+            it.update()
+        }
+        if (isWin()) {
+            forceChangeGameState(GameState.WIN_GAME)
+        }
     }
 
     override fun action(direction: GameDirection) {
         player.move(direction)
+    }
+
+    private fun isWin(): Boolean {
+        map.boxList.forEach {
+            if (!it.isDone()) return false
+        }
+        return true
+    }
+
+    override fun bindGameStateCallback(gameStateCallback: GameState.GameStateCallBack) {
+        this.gameStateCallback = gameStateCallback
+    }
+
+    override fun bindRenderCallback(renderCallBack: RenderState.RenderCallback) {
     }
 }

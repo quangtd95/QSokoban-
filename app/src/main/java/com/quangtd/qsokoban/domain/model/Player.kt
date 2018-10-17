@@ -76,11 +76,43 @@ class Player(x: Int = 0, y: Int = 0,
                 }
                 GameDirection.STOP -> {
                     isMoving = false
-                    xF = nextDest.x.toFloat()
-                    yF = nextDest.y.toFloat()
-                    x = nextDest.x
-                    y = nextDest.y
+                    this.saveNewLocation()
+                    pushedBox?.saveNewLocation()
+                    pushedBox = null
                 }
+            }
+        }
+    }
+
+    private fun saveNewLocation() {
+        xF = nextDest.x.toFloat()
+        yF = nextDest.y.toFloat()
+        x = nextDest.x
+        y = nextDest.y
+    }
+
+    private fun clearNextDest() {
+        nextDest.x = x
+        nextDest.y = y
+        xF = x.toFloat()
+        yF = y.toFloat()
+    }
+
+
+    private fun checkCollision(direction: GameDirection) {
+        //check colision wall
+        if (!checkCollisionWall(nextDest)) {
+            this.direction = direction
+        } else {
+            clearNextDest()
+        }
+        //check box
+        val pushedBox = getBox(nextDest)
+        if (pushedBox != null) {
+            if (pushedBox.canPush(direction)) {
+                this.pushedBox = pushedBox
+            } else {
+                clearNextDest()
             }
         }
     }
@@ -90,60 +122,37 @@ class Player(x: Int = 0, y: Int = 0,
             isMoving = true
             xF = x.toFloat()
             yF = y.toFloat()
+            this.direction = direction
             when (direction) {
                 GameDirection.LEFT -> {
                     nextDest.x = x - 1
                     nextDest.y = y
                     animation.setFrames(imageManager.playerLeft)
-                    if (!checkCollisionWall(nextDest)) {
-                        this.direction = direction
-                    } else {
-                        clearNextDest()
-                    }
+                    checkCollision(direction)
                 }
                 GameDirection.RIGHT -> {
                     nextDest.x = x + 1
                     nextDest.y = y
                     animation.setFrames(imageManager.playerRight)
-                    if (!checkCollisionWall(nextDest)) {
-                        this.direction = direction
-                    } else {
-                        clearNextDest()
-                    }
+                    checkCollision(direction)
                 }
                 GameDirection.UP -> {
                     nextDest.x = x
                     nextDest.y = y - 1
                     animation.setFrames(imageManager.playerUp)
-                    if (!checkCollisionWall(nextDest)) {
-                        this.direction = direction
-                    } else {
-                        clearNextDest()
-                    }
+                    checkCollision(direction)
                 }
                 GameDirection.DOWN -> {
                     nextDest.x = x
                     nextDest.y = y + 1
                     animation.setFrames(imageManager.playerDown)
-                    if (!checkCollisionWall(nextDest)) {
-                        this.direction = direction
-                    } else {
-                        clearNextDest()
-                    }
+                    checkCollision(direction)
                 }
                 GameDirection.STOP -> {
-
                 }
             }
-            pushedBox = getBox(nextDest)
-        }
-    }
 
-    private fun clearNextDest() {
-        nextDest.x = x
-        nextDest.y = y
-        xF = x.toFloat()
-        yF = y.toFloat()
+        }
     }
 
     /**
@@ -161,4 +170,5 @@ class Player(x: Int = 0, y: Int = 0,
     private fun getBox(nextDest: Point): Box? {
         return map.boxList.find { it.x == nextDest.x && it.y == nextDest.y }
     }
+
 }

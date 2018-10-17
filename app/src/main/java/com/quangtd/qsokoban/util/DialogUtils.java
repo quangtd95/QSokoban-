@@ -7,6 +7,7 @@ import android.view.WindowManager;
 import com.quangtd.qsokoban.R;
 
 import libs.mjn.prettydialog.PrettyDialog;
+import libs.mjn.prettydialog.PrettyDialogCallback;
 
 
 public class DialogUtils {
@@ -43,10 +44,11 @@ public class DialogUtils {
         }
     }
 
-    public static void showError(Context context, String message) {
+    public static void showError(Context context, String message, PrettyDialogCallback prettyDialogCallback) {
         PrettyDialog prettyDialog = new PrettyDialog(context);
         prettyDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         prettyDialog.setCancelable(true);
+        prettyDialog.setIconCallback(prettyDialogCallback);
         prettyDialog.setTitle(message).show();
     }
 }
