@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.support.v4.view.GestureDetectorCompat
 import android.view.MotionEvent
 import android.view.SurfaceHolder
-import android.view.View
 import com.quangtd.qsokoban.R
 import com.quangtd.qsokoban.domain.model.Level
 import com.quangtd.qsokoban.mvpbase.BaseActivity
@@ -18,6 +17,10 @@ class GameActivity : BaseActivity<GameView, GamePresenter>(), GameView, SurfaceH
 
     private lateinit var mDetector: GestureDetectorCompat
     private lateinit var level: Level
+    private var moveStep: Int = 0
+    private var target: Int = 0
+    private var highScore: Int = 0
+    private var ranking: Int = 3
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,10 +32,16 @@ class GameActivity : BaseActivity<GameView, GamePresenter>(), GameView, SurfaceH
 
     private fun initValues() {
         level = Level(id = intent.getIntExtra("level", 1))
+        moveStep = 0
+        highScore = level.savedMove
+        ratingBar.rating = ranking.toFloat()
+
     }
 
     private fun initViews() {
-
+        txtMove.text = moveStep.toString()
+        txtTarget.text = target.toString()
+        txtLevel.text = String.format(getString(R.string.level_string), level.id)
     }
 
     private fun initAction() {
@@ -60,6 +69,9 @@ class GameActivity : BaseActivity<GameView, GamePresenter>(), GameView, SurfaceH
         LogUtils.e("surfaceCreated")
         if (!isPause) {
             getPresenter(this@GameActivity).setUpGame(level)
+
+            target = getPresenter(this).getTarget()
+            txtTarget.text = target.toString()
             /*if (getPresenter(this).canNext()) {
                 next.visibility = View.VISIBLE
                 next.setOnClickListener {
@@ -130,4 +142,15 @@ class GameActivity : BaseActivity<GameView, GamePresenter>(), GameView, SurfaceH
         }
     }
 
+    override fun setMoved(moveStep: Int) {
+        txtMove.text = moveStep.toString()
+        if (moveStep > target && ranking >= 3) {
+            ranking = 2
+            ratingBar.rating = ranking.toFloat()
+        }
+        if (moveStep > target * 2 && ranking >= 2) {
+            ranking = 1
+            ratingBar.rating = ranking.toFloat()
+        }
+    }
 }

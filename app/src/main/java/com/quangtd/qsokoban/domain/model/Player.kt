@@ -99,12 +99,13 @@ class Player(x: Int = 0, y: Int = 0,
     }
 
 
-    private fun checkCollision(direction: GameDirection) {
+    private fun checkCollision(direction: GameDirection): Boolean {
         //check colision wall
         if (!checkCollisionWall(nextDest)) {
             this.direction = direction
         } else {
             clearNextDest()
+            return false
         }
         //check box
         val pushedBox = getBox(nextDest)
@@ -113,11 +114,13 @@ class Player(x: Int = 0, y: Int = 0,
                 this.pushedBox = pushedBox
             } else {
                 clearNextDest()
+                return false
             }
         }
+        return true
     }
 
-    fun move(direction: GameDirection) {
+    fun move(direction: GameDirection): Boolean {
         if (!isMoving) {
             isMoving = true
             xF = x.toFloat()
@@ -128,31 +131,29 @@ class Player(x: Int = 0, y: Int = 0,
                     nextDest.x = x - 1
                     nextDest.y = y
                     animation.setFrames(imageManager.playerLeft)
-                    checkCollision(direction)
                 }
                 GameDirection.RIGHT -> {
                     nextDest.x = x + 1
                     nextDest.y = y
                     animation.setFrames(imageManager.playerRight)
-                    checkCollision(direction)
                 }
                 GameDirection.UP -> {
                     nextDest.x = x
                     nextDest.y = y - 1
                     animation.setFrames(imageManager.playerUp)
-                    checkCollision(direction)
                 }
                 GameDirection.DOWN -> {
                     nextDest.x = x
                     nextDest.y = y + 1
                     animation.setFrames(imageManager.playerDown)
-                    checkCollision(direction)
                 }
                 GameDirection.STOP -> {
                 }
             }
+            return checkCollision(direction)
 
         }
+        return false
     }
 
     /**

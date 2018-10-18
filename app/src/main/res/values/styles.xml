@@ -1,11 +1,12 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/bgGame</item>
         <item name="colorPrimaryDark">@color/bgGame</item>
         <item name="colorAccent">@color/bgGame</item>
+        <item name="android:windowAnimationStyle">@null</item>
     </style>
 
 </resources>

@@ -25,7 +25,7 @@ class GameDataRepositoryImpl : GameDataRepository {
         //nếu data = null hoặc empty -> load lần đầu. set data rồi lưu luôn.
         if (TextUtils.isEmpty(data)) {
             for (i in 1..1000) {
-                val l = Level(id = i, gameKind = GameKind.CLASSIC.value, isComplete = false, isUnlock = (i == 1), savedMove = 0, ranking = 0, targetMove = 0)
+                val l = Level(id = i, gameKind = GameKind.CLASSIC.value, isComplete = false, isUnlock = (i == 1), savedMove = 0, ranking = 0)
                 levelList.add(l)
             }
             saveData(context, levelList)

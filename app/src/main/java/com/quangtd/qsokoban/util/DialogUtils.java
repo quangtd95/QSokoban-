@@ -2,6 +2,7 @@ package com.quangtd.qsokoban.util;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.view.Window;
 import android.view.WindowManager;
 
 import com.quangtd.qsokoban.R;
@@ -30,6 +31,7 @@ public class DialogUtils {
             dialog = null;
         }
         dialog = new Dialog(context, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         dialog.setCancelable(false);
         dialog.setContentView(R.layout.custom_progress_dialog);
@@ -46,9 +48,9 @@ public class DialogUtils {
 
     public static void showError(Context context, String message, PrettyDialogCallback prettyDialogCallback) {
         PrettyDialog prettyDialog = new PrettyDialog(context);
-        prettyDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        prettyDialog.setCancelable(true);
+        prettyDialog.setCancelable(false);
         prettyDialog.setIconCallback(prettyDialogCallback);
         prettyDialog.setTitle(message).show();
     }
+
 }

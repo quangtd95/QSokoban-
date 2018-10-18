@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.view.SurfaceHolder
+import com.quangtd.qsokoban.R
 import com.quangtd.qsokoban.domain.game.enums.RenderState
 import com.quangtd.qsokoban.domain.game.gamemanager.GameManager
 import com.quangtd.qsokoban.domain.model.SokobanMap
@@ -26,6 +27,7 @@ class GamePanel(var context: Context,
     private lateinit var paintDest: Paint
     private lateinit var paintBox: Paint
     private var widthScreen: Int = 0
+    private var colorBackground : Int = 0
 
     fun loadGameUI() {
         map = gameManager.getSokobanMap()
@@ -36,6 +38,7 @@ class GamePanel(var context: Context,
         paintDest = Paint(Paint.FILTER_BITMAP_FLAG)
         paintBox = Paint(Paint.FILTER_BITMAP_FLAG)
         widthScreen = ScreenUtils.getWidthScreen(context)
+        colorBackground = context.resources.getColor(R.color.bgGame)
 
     }
 
@@ -90,7 +93,7 @@ class GamePanel(var context: Context,
     }
 
     private fun drawBackground(canvas: Canvas) {
-        canvas.drawColor(Color.WHITE)
+        canvas.drawColor(colorBackground)
     }
 
     private fun drawPlayer(canvas: Canvas) {

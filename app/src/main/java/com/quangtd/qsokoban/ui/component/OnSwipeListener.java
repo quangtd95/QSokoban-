@@ -27,15 +27,17 @@ public class OnSwipeListener extends GestureDetector.SimpleOnGestureListener {
         //  C => it's a DOWN swipe
         //  D => it's a LEFT swipe
         //
+        if (e1 != null && e2 != null) {
+            float x1 = e1.getX();
+            float y1 = e1.getY();
 
-        float x1 = e1.getX();
-        float y1 = e1.getY();
+            float x2 = e2.getX();
+            float y2 = e2.getY();
 
-        float x2 = e2.getX();
-        float y2 = e2.getY();
-
-        Direction direction = getDirection(x1, y1, x2, y2);
-        return onSwipe(direction);
+            Direction direction = getDirection(x1, y1, x2, y2);
+            return onSwipe(direction);
+        }
+        return false;
     }
 
     /**

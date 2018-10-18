@@ -46,7 +46,7 @@ class GamePresenter : BasePresenter<GameView>(), GameState.GameStateCallBack, Re
 
     fun move(direction: OnSwipeListener.Direction) {
         resumeGame()
-        when (direction) {
+        val canMove = when (direction) {
             OnSwipeListener.Direction.up -> {
                 gameManager.action(GameDirection.UP)
             }
@@ -59,6 +59,10 @@ class GamePresenter : BasePresenter<GameView>(), GameState.GameStateCallBack, Re
             OnSwipeListener.Direction.right -> {
                 gameManager.action(GameDirection.RIGHT)
             }
+        }
+        if (canMove) {
+            gameManager.increaseMoveStepCount()
+            getIView()?.setMoved(gameManager.getMoveStep())
         }
     }
 
@@ -116,6 +120,14 @@ class GamePresenter : BasePresenter<GameView>(), GameState.GameStateCallBack, Re
                 pauseGame()
             }
         }
+    }
+
+    fun getMoveStep(): Int {
+        return gameManager.getMoveStep()
+    }
+
+    fun getTarget(): Int {
+        return gameManager.getTarget()
     }
 
 }

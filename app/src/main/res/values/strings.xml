@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Q Sokuban</string>
+    <string name="level_string">level %d</string>
 </resources>

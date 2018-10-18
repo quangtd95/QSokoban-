@@ -11,4 +11,5 @@ interface GameView : IBaseView {
     fun getSurfaceHolder(): SurfaceHolder
     fun showWinGameAlert()
     fun showLoseGameAlert()
+    fun setMoved(moveStep: Int)
 }

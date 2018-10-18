@@ -31,6 +31,8 @@ class GameManager(private var level: Level) : IGameManager {
     private var widthCell = 0F
     private var startTimestamp = 0L
     private var gameStateCallback: GameState.GameStateCallBack? = null
+    private var moveStep = 0
+    private var target = 0
 
     fun loadGame(context: Context) {
         forceChangeGameState(GameState.LOADING)
@@ -139,8 +141,8 @@ class GameManager(private var level: Level) : IGameManager {
         }
     }
 
-    override fun action(direction: GameDirection) {
-        player.move(direction)
+    override fun action(direction: GameDirection): Boolean {
+        return player.move(direction)
     }
 
     private fun isWin(): Boolean {
@@ -155,5 +157,17 @@ class GameManager(private var level: Level) : IGameManager {
     }
 
     override fun bindRenderCallback(renderCallBack: RenderState.RenderCallback) {
+    }
+
+    override fun increaseMoveStepCount() {
+        moveStep++
+    }
+
+    override fun getMoveStep(): Int {
+        return moveStep
+    }
+
+    override fun getTarget(): Int {
+        return map.solution.length
     }
 }

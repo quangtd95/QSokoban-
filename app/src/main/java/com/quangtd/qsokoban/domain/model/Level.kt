@@ -18,8 +18,6 @@ data class Level(
         var isComplete: Boolean = false,
         @SerializedName("isUnlock")
         var isUnlock: Boolean = false,
-        @SerializedName("targetMove")
-        var targetMove: Int = 0,
         @SerializedName("savedMove")
         var savedMove: Int = 0,
         @SerializedName("ranking")

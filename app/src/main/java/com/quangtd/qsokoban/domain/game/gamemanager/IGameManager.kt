@@ -12,7 +12,10 @@ import com.quangtd.qsokoban.domain.model.SokobanMap
 interface IGameManager {
     fun getSokobanMap(): SokobanMap
     fun update()
-    fun action(direction: GameDirection)
+    fun action(direction: GameDirection): Boolean
     fun bindGameStateCallback(gameStateCallback: GameState.GameStateCallBack)
     fun bindRenderCallback(renderCallBack: RenderState.RenderCallback)
+    fun increaseMoveStepCount()
+    fun getMoveStep(): Int
+    fun getTarget(): Int
 }

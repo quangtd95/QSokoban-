@@ -8,11 +8,13 @@
         android:id="@+id/groupTop"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_56sdp"
+        android:background="@color/bgTop"
         android:orientation="horizontal">
 
         <RelativeLayout
             android:layout_width="wrap_content"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:paddingStart="@dimen/_5sdp">
 
             <TextView
                 android:id="@+id/txtMove"
@@ -21,6 +23,7 @@
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 android:text="100"
+                android:textColor="@color/pdlg_color_white"
                 android:textSize="@dimen/_25sdp" />
 
             <TextView
@@ -30,6 +33,7 @@
                 android:layout_above="@id/txtMove"
                 android:layout_centerHorizontal="true"
                 android:text="MOVE"
+                android:textColor="@color/pdlg_color_white"
                 android:textSize="@dimen/_10sdp" />
 
         </RelativeLayout>
@@ -45,8 +49,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
-                android:gravity="center"
                 android:text="200"
+                android:textColor="@color/pdlg_color_white"
                 android:textSize="@dimen/_25sdp" />
 
             <TextView
@@ -56,18 +60,55 @@
                 android:layout_above="@id/txtTarget"
                 android:layout_centerHorizontal="true"
                 android:text="TARGET"
+                android:textColor="@color/pdlg_color_white"
                 android:textSize="@dimen/_10sdp" />
 
         </RelativeLayout>
 
+
+        <com.willy.ratingbar.ScaleRatingBar xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/ratingBar"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical|center_horizontal"
+            app:srb_clearRatingEnabled="false"
+            app:srb_clickable="false"
+            app:srb_isIndicator="false"
+            app:srb_minimumStars="1"
+            app:srb_numStars="3"
+            app:srb_rating="3"
+            app:srb_scrollable="false"
+            app:srb_stepSize="1" />
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@color/bgDark"
+            android:paddingTop="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_5sdp"
+            android:scaleType="centerInside"
+            android:src="@mipmap/sokobon_trans" />
+
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/txtLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/groupTop"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="@dimen/_5sdp"
+        android:padding="@dimen/_5sdp"
+        android:text="level 1"
+        android:textColor="@color/pdlg_color_white"
+        android:textSize="@dimen/_20sdp" />
 
     <com.quangtd.qsokoban.ui.sokoban.SokobanView
         android:id="@+id/sokobanView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/groupTop"
-        android:layout_marginTop="@dimen/_10sdp" />
+        android:layout_below="@id/txtLevel" />
 
 
 </RelativeLayout>
