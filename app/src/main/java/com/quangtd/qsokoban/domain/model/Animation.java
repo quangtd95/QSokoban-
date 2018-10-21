@@ -29,7 +29,6 @@ public class Animation {
     public void setFrames(ArrayList<Bitmap> frames, int delay) {
         setFrames(frames);
         this.delay = delay;
-
     }
 
     public void setFrames(ArrayList<Bitmap> frames, int[] delays) {

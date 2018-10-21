@@ -1,6 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bgTop">
 
-</LinearLayout>
+    <RelativeLayout
+        android:id="@+id/groupTop"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_56sdp"
+        android:background="@color/bgTop"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/imbLogo"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@color/bgDark"
+            android:paddingTop="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_5sdp"
+            android:scaleType="centerInside"
+            android:src="@mipmap/sokobon_trans" />
+
+        <com.quangtd.qsokoban.ui.component.FontTextView
+            android:id="@+id/lbAppName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_toEndOf="@id/imbLogo"
+            android:background="@color/bgGame"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingEnd="@dimen/_5sdp"
+            android:text="@string/app_name"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/_30sdp"
+            app:font_name="futura_medium_bt.ttf" />
+
+    </RelativeLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvLevel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/groupTop"
+        android:layout_margin="@dimen/_5sdp"
+        android:background="@color/bgTop"
+        tools:listitem="@layout/item_level" />
+</RelativeLayout>

@@ -100,6 +100,19 @@ class Player(x: Int = 0, y: Int = 0,
 
 
     private fun checkCollision(direction: GameDirection): Boolean {
+        //check colision bound
+        if (nextDest.x >= map.cols) {
+            clearNextDest()
+            return false
+        }
+        if (nextDest.y >= map.rows) {
+            clearNextDest()
+            return false
+        }
+        if (nextDest.y < 0 || nextDest.x < 0) {
+            clearNextDest()
+            return false
+        }
         //check colision wall
         if (!checkCollisionWall(nextDest)) {
             this.direction = direction

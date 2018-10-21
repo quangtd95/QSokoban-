@@ -9,17 +9,19 @@ import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.support.annotation.DrawableRes;
 
+import java.util.ArrayList;
+
 public class LoadImageUtils {
-    public static Bitmap[] loadSubImage(Context context, @DrawableRes int id, int rows, int cols) {
+    public static ArrayList<Bitmap> loadSubImage(Context context, @DrawableRes int id, int rows, int cols) {
+        ArrayList<Bitmap> b = new ArrayList<>();
         try {
             Bitmap bigImage = loadImage(context, id);
             int w = bigImage.getWidth() / cols;
             int h = bigImage.getHeight() / rows;
-            Bitmap[] b = new Bitmap[rows * cols];
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < cols; j++) {
                     Rect copyRect = new Rect(j * w, i * h, j * w + w, i * h + h);
-                    b[(i * cols) + j] = getSubImage(bigImage, copyRect);
+                    b.add(getSubImage(bigImage, copyRect));
                 }
             }
             return b;

@@ -1,6 +1,7 @@
 package com.quangtd.qsokoban.domain.game.gamemanager
 
 import android.content.Context
+import android.graphics.Point
 import com.google.gson.Gson
 import com.quangtd.qsokoban.common.CommonConstants.Companion.MAP_NAME_TEMPLATE
 import com.quangtd.qsokoban.domain.game.enums.GameDirection
@@ -29,18 +30,13 @@ class GameManager(private var level: Level) : IGameManager {
     private var targetStep = 0
 
     private var widthCell = 0F
-    private var startTimestamp = 0L
     private var gameStateCallback: GameState.GameStateCallBack? = null
     private var moveStep = 0
     private var target = 0
+    var boom: Boom? = null
 
     fun loadGame(context: Context) {
         forceChangeGameState(GameState.LOADING)
-        //load image
-//        BitmapManager.initResource(context)
-        //load sound
-//        soundManager = SoundManager.getInstance()
-        //load map
         loadMap(context, level)
         initGame(context)
         forceChangeGameState(GameState.LOADED)
@@ -65,45 +61,65 @@ class GameManager(private var level: Level) : IGameManager {
         }
         targetStep = map.solution.length
         widthCell = ScreenUtils.getWidthScreen(context).toFloat() / ((if (rows > cols) rows else cols) + 2)
+        initMap()
 
-        map.mapData.forEachIndexed { row, rowData ->
-            rowData.forEachIndexed { col, colData ->
-                when (colData) {
-                    '#' -> {
-                        val wall = Wall(col, row)
-                        wall.widthCell = widthCell
-                        wallList.add(wall)
-                    }
-                    '@' -> {
-                        player = Player(col, row, map)
-                        player.widthCell = widthCell
-                    }
+    }
 
-                    '$' -> {
-                        val box = Box(col, row)
-                        box.map = map
-                        box.widthCell = widthCell
-                        boxList.add(box)
+    private fun resetMap() {
+        moveStep = 0
+        wallList.clear()
+        boxList.clear()
+        groundList.clear()
+        destList.clear()
+    }
+
+    private fun initMap() {
+        synchronized(this.map) {
+            resetMap()
+            map.mapData.forEachIndexed { row, rowData ->
+                rowData.forEachIndexed { col, colData ->
+                    when (colData) {
+                        '#' -> {
+                            val wall = Wall(col, row)
+                            wall.widthCell = widthCell
+                            wallList.add(wall)
+                        }
+                        '@' -> {
+                            player = Player(col, row, map)
+                            player.widthCell = widthCell
+                        }
+
+                        '$' -> {
+                            val box = Box(col, row)
+                            box.map = map
+                            box.widthCell = widthCell
+                            boxList.add(box)
+                        }
+                        '.' -> {
+                            val destination = Destination(col, row)
+                            destination.widthCell = widthCell
+                            destList.add(destination)
+                        }
+                        '+' -> {
+                            val destination = Destination(col, row)
+                            destination.widthCell = widthCell
+                            destList.add(destination)
+                            player = Player(col, row, map)
+                            player.widthCell = widthCell
+                        }
+                        else -> {
+                            // do-nothing
+                        }
                     }
-                    '.' -> {
-                        val destination = Destination(col, row)
-                        destination.widthCell = widthCell
-                        destList.add(destination)
-                    }
-                    '+' -> {
-                        val destination = Destination(col, row)
-                        destination.widthCell = widthCell
-                        destList.add(destination)
-                        player = Player(col, row, map)
-                        player.widthCell = widthCell
-                    }
-                    else -> {
-                        // do-nothing
-                    }
-                }
-                when (colData) {
-                    '@', '$', '.', '+', ' ' -> {
-                        if (rowData.substring(0, col).contains("#") && rowData.substring(col, rowData.length).contains("#")) {
+                    when (colData) {
+                        '@', '$', '.', '+', ' ' -> {
+                            if (rowData.substring(0, col).contains("#") && rowData.substring(col, rowData.length).contains("#")) {
+                                groundList.add(Ground(col, row).apply {
+                                    this.widthCell = this@GameManager.widthCell
+                                })
+                            }
+                        }
+                        '#' -> {
                             groundList.add(Ground(col, row).apply {
                                 this.widthCell = this@GameManager.widthCell
                             })
@@ -111,15 +127,16 @@ class GameManager(private var level: Level) : IGameManager {
                     }
                 }
             }
+            map.groundList = groundList
+            map.boxList = boxList
+            map.destList = destList
+            map.wallList = wallList
+            map.player = player
+            map.rows = rows
+            map.cols = cols
+            map.widthCell = widthCell
         }
-        map.groundList = groundList
-        map.boxList = boxList
-        map.destList = destList
-        map.wallList = wallList
-        map.player = player
-        map.rows = rows
-        map.cols = cols
-        map.widthCell = widthCell
+
     }
 
     fun forceChangeGameState(gameState: GameState) {
@@ -133,15 +150,20 @@ class GameManager(private var level: Level) : IGameManager {
 
     override fun update() {
         player.update()
+        map.destList.forEach {
+            it.update()
+        }
         map.boxList.forEach {
             it.update()
         }
+        boom?.update()
         if (isWin()) {
             forceChangeGameState(GameState.WIN_GAME)
         }
     }
 
     override fun action(direction: GameDirection): Boolean {
+        SoundManager.getInstance().playTouchSound()
         return player.move(direction)
     }
 
@@ -169,5 +191,42 @@ class GameManager(private var level: Level) : IGameManager {
 
     override fun getTarget(): Int {
         return map.solution.length
+    }
+
+    override fun reloadGame() {
+        initMap()
+        forceChangeGameState(GameState.LOADED)
+    }
+
+    override fun setBoomPosition(point: Point?) {
+        if (point == null) {
+            boom = null
+            return
+        }
+        if (wallList.find { it.x == point.x && it.y == point.y } == null) {
+            boom = null
+            return
+        }
+        if (boom == null) {
+            boom = Boom(point.x, point.y)
+            boom!!.widthCell = widthCell
+        }
+        boom!!.x = point.x
+        boom!!.y = point.y
+    }
+
+    override fun checkHasPlaceBoom(): Boolean {
+        return boom != null
+    }
+
+    override fun destroyWall(l: (Unit) -> Unit) {
+        if (boom != null) {
+            boom!!.destroy { _ ->
+                val wall = wallList.find { it.x == this.boom!!.x && it.y == this.boom!!.y }
+                if (wall != null) wallList.remove(wall)
+                boom = null
+                l.invoke(Unit)
+            }
+        }
     }
 }

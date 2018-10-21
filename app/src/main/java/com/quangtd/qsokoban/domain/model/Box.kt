@@ -1,9 +1,6 @@
 package com.quangtd.qsokoban.domain.model
 
-import android.graphics.Canvas
-import android.graphics.Matrix
-import android.graphics.Paint
-import android.graphics.Point
+import android.graphics.*
 import com.quangtd.qsokoban.domain.game.enums.GameDirection
 import com.quangtd.qsokoban.domain.game.gamemanager.ImageManager
 import com.quangtd.qsokoban.util.LoadImageUtils
@@ -18,21 +15,33 @@ class Box(x: Int, y: Int) : Sprite(x, y) {
     private val imageManager = ImageManager.getInstance()
     private var completeFlg = false
     var nextPoint = Point()
-
+    var rect = RectF()
     override fun update() {
         completeFlg = false
+        rect.set(xF * widthCell, yF * widthCell, (xF + 1) * widthCell, (yF+ 1) * widthCell)
         map.destList.forEach { dest ->
             if (dest.x == x && dest.y == y) completeFlg = true
         }
     }
 
-    public fun isDone(): Boolean {
+    private fun checkIntersectDest(): Boolean {
+        map.destList.forEach { dest ->
+            if (dest.rect.intersect(rect)) return true
+        }
+        return false
+    }
+
+    fun isDone(): Boolean {
         return completeFlg
     }
 
     override fun draw(canvas: Canvas, paint: Paint) {
         LoadImageUtils.setupMatrixFitCell(matrix, (widthCell * 0.9F).toInt(), (widthCell * 0.9F).toInt(), imageManager.box.width, imageManager.box.height, widthCell, xF, yF)
-        canvas.drawBitmap(imageManager.box, matrix, paint)
+        if (checkIntersectDest()) {
+            canvas.drawBitmap(imageManager.boxFinish, matrix, paint)
+        } else {
+            canvas.drawBitmap(imageManager.box, matrix, paint)
+        }
     }
 
     fun canPush(direction: GameDirection): Boolean {

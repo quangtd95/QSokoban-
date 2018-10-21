@@ -18,10 +18,12 @@ class GameThread(private var gameManager: GameManager, private var gamePanel: Ga
     private var startRenderTime = 0L
     private var elapsedTime = 0L
     private var waitingTime = 0L
+    @Volatile
+    var chooseBoomFlg = false
 
     override fun run() {
         while (!stopFlg) {
-            if (renderFlg) {
+            if (renderFlg || chooseBoomFlg) {
                 startRenderTime = System.currentTimeMillis()
                 gameManager.update()
                 gamePanel.draw()

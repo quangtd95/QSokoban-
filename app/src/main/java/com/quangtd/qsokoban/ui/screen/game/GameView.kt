@@ -1,6 +1,7 @@
 package com.quangtd.qsokoban.ui.screen.game
 
 import android.view.SurfaceHolder
+import com.quangtd.qsokoban.domain.model.Level
 import com.quangtd.qsokoban.mvpbase.IBaseView
 
 /**
@@ -11,5 +12,11 @@ interface GameView : IBaseView {
     fun getSurfaceHolder(): SurfaceHolder
     fun showWinGameAlert()
     fun showLoseGameAlert()
-    fun setMoved(moveStep: Int)
+    fun setMoved(moveStep: Int, ranking: Int)
+    fun getSurfaceHeight(): Int
+    fun setHeightGame(height: Int)
+    fun moveNextLevel(nextLevel: Level)
+    fun setBest(savedMove: Int)
+    fun chooseWallToDestroy(b: Boolean)
+    fun placeBoomToDestroyAlert()
 }

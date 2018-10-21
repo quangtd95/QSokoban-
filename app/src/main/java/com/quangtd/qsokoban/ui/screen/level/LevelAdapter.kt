@@ -1,15 +1,15 @@
-package com.quangtd.qmazes.ui.screen.level
+package com.quangtd.qsokoban.ui.screen.level
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.quangtd.qmazes.R
-import com.quangtd.qmazes.data.model.Level
-import com.quangtd.qmazes.game.enums.GameKind
-import com.quangtd.qmazes.mvpbase.BaseAdapter
-import com.quangtd.qmazes.mvpbase.BaseViewHolder
+import com.quangtd.qsokoban.R
+import com.quangtd.qsokoban.domain.model.Level
+import com.quangtd.qsokoban.mvpbase.BaseAdapter
+import com.quangtd.qsokoban.mvpbase.BaseViewHolder
 import kotlinx.android.synthetic.main.item_level.view.*
+import java.util.*
 
 /**
  * Created by quang.td95@gmail.com
@@ -25,31 +25,17 @@ class LevelAdapter(private var mContext: Context) : BaseAdapter<Level, LevelAdap
     inner class LevelViewHolder(itemView: View) : BaseViewHolder<Level>(itemView) {
 
         override fun bindData(t: Level) {
-            if (t.isUnLocked) {
-                itemView.ivLocked.visibility = View.INVISIBLE
-                itemView.tvLevel.visibility = View.VISIBLE
-                itemView.tvLevel.text = t.id.toString()
-                if (t.isComplete) {
-                    when (t.gameKind){
-                        GameKind.ICE->itemView.rlLevel.background = mContext.resources.getDrawable(R.drawable.round_corner_ice_bg)
-                        GameKind.CLASSIC->itemView.rlLevel.background = mContext.resources.getDrawable(R.drawable.round_corner_classic_bg)
-                        GameKind.DARKNESS->itemView.rlLevel.background = mContext.resources.getDrawable(R.drawable.round_corner_dark_bg)
-                        GameKind.TRAP->itemView.rlLevel.background = mContext.resources.getDrawable(R.drawable.round_corner_trap_bg)
-                        GameKind.TIME_TRIAL->itemView.rlLevel.background = mContext.resources.getDrawable(R.drawable.round_corner_time_bg)
-
-                        else->itemView.rlLevel.background = mContext.resources.getDrawable(R.drawable.round_corner_yellow_bg)
-                    }
-
-                } else {
-                    itemView.rlLevel.background = mContext.resources.getDrawable(R.drawable.round_corner_white_bg)
-                }
-            } else {
-                itemView.ivLocked.visibility = View.VISIBLE
-                itemView.tvLevel.visibility = View.INVISIBLE
-                itemView.rlLevel.background = mContext.resources.getDrawable(R.drawable.round_corner_white_bg)
+            //đã hoàn thành
+            when {
+                t.isComplete -> itemView.imbBox.setImageResource(R.drawable.crate_yellow)
+                //mới được mở khóa
+                t.isUnlock -> itemView.imbBox.setImageResource(R.drawable.crate_blue)
+                //chưa mở khóa
+                else -> itemView.imbBox.setImageResource(R.drawable.crate_beige)
             }
-
-            itemView.rlLevel.setOnClickListener {
+            itemView.ratingBar.rating = t.ranking.toFloat()
+            itemView.lbLevel.text = t.id.toString()
+            itemView.lbLevel.setOnClickListener {
                 onLevelClickListener?.onClickLevel(t)
             }
         }

@@ -1,6 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rlLevel"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="vertical">
 
-</LinearLayout>
+    <com.willy.ratingbar.BaseRatingBar
+        android:id="@+id/ratingBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        app:srb_clearRatingEnabled="false"
+        app:srb_clickable="false"
+        app:srb_numStars="3"
+        app:srb_scrollable="false"
+        app:srb_starHeight="@dimen/_13sdp"
+        app:srb_starPadding="@dimen/_1sdp"
+        app:srb_starWidth="@dimen/_13sdp" />
+
+    <ImageButton
+        android:id="@+id/imbBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ratingBar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:layout_marginBottom="@dimen/_5sdp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/crate_yellow" />
+
+    <com.quangtd.qsokoban.ui.component.FontTextView
+        android:id="@+id/lbLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@id/imbBox"
+        android:layout_alignTop="@id/imbBox"
+        android:layout_alignEnd="@id/imbBox"
+        android:layout_alignBottom="@id/imbBox"
+        android:gravity="center"
+        android:textColor="#000"
+        android:textSize="@dimen/_15sdp"
+        android:textStyle="bold"
+        tools:text="100" />
+
+
+</RelativeLayout>

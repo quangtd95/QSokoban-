@@ -9,7 +9,7 @@ import com.quangtd.qsokoban.util.LoadImageUtils
  * Created by quang.td95@gmail.com
  * on 10/14/2018.
  */
-class ImageManager private constructor()  {
+class ImageManager private constructor() {
     companion object {
         private var ins: ImageManager? = null
 
@@ -23,8 +23,10 @@ class ImageManager private constructor()  {
 
     lateinit var ground: Bitmap
     lateinit var box: Bitmap
+    lateinit var boxFinish: Bitmap
     lateinit var wall: Bitmap
     lateinit var destination: Bitmap
+    lateinit var boom: Bitmap
     var playerIdleLeft: ArrayList<Bitmap> = ArrayList()
     var playerIdleRight: ArrayList<Bitmap> = ArrayList()
     var playerIdleUp: ArrayList<Bitmap> = ArrayList()
@@ -33,10 +35,13 @@ class ImageManager private constructor()  {
     var playerRight: ArrayList<Bitmap> = ArrayList()
     var playerUp: ArrayList<Bitmap> = ArrayList()
     var playerDown: ArrayList<Bitmap> = ArrayList()
+    var boomExplode: ArrayList<Bitmap> = ArrayList()
 
     fun initResource(context: Context) {
+        boom = LoadImageUtils.loadImage(context, R.drawable.boom)
         box = LoadImageUtils.loadImage(context, R.drawable.cratedark_blue)
-        wall = LoadImageUtils.loadImage(context, R.drawable.wall_black)
+        boxFinish = LoadImageUtils.loadImage(context, R.drawable.cratedark_yellow)
+        wall = LoadImageUtils.loadImage(context, R.drawable.wall_beige)
         destination = LoadImageUtils.loadImage(context, R.drawable.endpoint_blue)
         playerIdleLeft.add(LoadImageUtils.loadImage(context, R.drawable.character_1))
         playerIdleRight.add(LoadImageUtils.loadImage(context, R.drawable.character_2))
@@ -53,5 +58,6 @@ class ImageManager private constructor()  {
         playerDown.add(LoadImageUtils.loadImage(context, R.drawable.character_5))
         playerDown.add(LoadImageUtils.loadImage(context, R.drawable.character_6))
         ground = LoadImageUtils.loadImage(context, R.drawable.groundgravel_concrete)
+        boomExplode = LoadImageUtils.loadSubImage(context, R.drawable.explode, 1, 5)
     }
 }

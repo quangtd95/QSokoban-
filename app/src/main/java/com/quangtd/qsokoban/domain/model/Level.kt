@@ -1,5 +1,7 @@
 package com.quangtd.qsokoban.domain.model
 
+import android.os.Parcel
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 import com.quangtd.qsokoban.domain.game.enums.GameKind
 import com.quangtd.qsokoban.mvpbase.BaseModel
@@ -21,4 +23,5 @@ data class Level(
         @SerializedName("savedMove")
         var savedMove: Int = 0,
         @SerializedName("ranking")
-        var ranking: Int = 0) : BaseModel, Serializable
+        var ranking: Int = 0) : BaseModel, Serializable {
+}

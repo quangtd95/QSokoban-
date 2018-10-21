@@ -1,9 +1,7 @@
 package com.quangtd.qsokoban.domain.game.gameview
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.*
 import android.view.SurfaceHolder
 import com.quangtd.qsokoban.R
 import com.quangtd.qsokoban.domain.game.enums.RenderState
@@ -27,7 +25,11 @@ class GamePanel(var context: Context,
     private lateinit var paintDest: Paint
     private lateinit var paintBox: Paint
     private var widthScreen: Int = 0
-    private var colorBackground : Int = 0
+    private var colorBackground: Int = 0
+    protected var tempBackgroundBitmap: Bitmap? = null
+    private var userBoom = false
+    private var marginLeft = 0F
+    private var marginTop = 0F
 
     fun loadGameUI() {
         map = gameManager.getSokobanMap()
@@ -49,23 +51,42 @@ class GamePanel(var context: Context,
             viewHolder.unlockCanvasAndPost(canvas)
         } catch (e: Exception) {
             e.printStackTrace()
+            try {
+                viewHolder.unlockCanvasAndPost(canvas)
+            } catch (e1: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
     private fun draw(canvas: Canvas) {
         canvas.save()
-        canvas.translate((widthScreen - map.cols * map.widthCell) / 2, map.widthCell)
-        drawMap(canvas)
-        drawPlayer(canvas)
-        canvas.restore()
-    }
-
-    private fun drawMap(canvas: Canvas) {
         drawBackground(canvas)
-        drawGround(canvas)
+        marginLeft = (widthScreen - map.cols * map.widthCell) / 2
+        marginTop = map.widthCell
+        canvas.translate(marginLeft, marginTop)
+        if (tempBackgroundBitmap == null) {
+            tempBackgroundBitmap = Bitmap.createBitmap((widthScreen), (getHeight()), Bitmap.Config.ARGB_8888)
+            val tempCanvasBackground = Canvas(tempBackgroundBitmap)
+            drawMap(tempCanvasBackground)
+        } else {
+            canvas.drawBitmap(tempBackgroundBitmap, 0F, 0F, paintBackground)
+        }
         drawWall(canvas)
         drawDest(canvas)
         drawBox(canvas)
+        drawPlayer(canvas)
+        if (userBoom) {
+            drawBoom(canvas)
+        }
+    }
+
+    private fun drawBoom(canvas: Canvas) {
+        gameManager.boom?.draw(canvas, paintWall)
+    }
+
+    private fun drawMap(canvas: Canvas) {
+        drawGround(canvas)
     }
 
     private fun drawDest(canvas: Canvas) {
@@ -102,5 +123,21 @@ class GamePanel(var context: Context,
 
     fun bindRenderCalBack(renderCallback: RenderState.RenderCallback) {
 
+    }
+
+    fun getHeight(): Int {
+        return (map.widthCell * (map.rows + 2)).toInt()
+    }
+
+    fun userBoom(b: Boolean) {
+        userBoom = b
+    }
+
+    fun convertPxToPoint(x: Float, y: Float): Point? {
+        val xF = (x - marginLeft) / map.widthCell
+        val yF = (y - marginTop) / map.widthCell
+        if (xF < 0 || xF > map.cols) return null
+        if (yF < 0 || yF > map.rows) return null
+        return Point(Math.floor(xF.toDouble()).toInt(), Math.floor(yF.toDouble()).toInt())
     }
 }

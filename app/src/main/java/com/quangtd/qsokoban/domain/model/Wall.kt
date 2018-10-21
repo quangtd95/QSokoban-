@@ -1,8 +1,6 @@
 package com.quangtd.qsokoban.domain.model
 
-import android.graphics.Canvas
-import android.graphics.Matrix
-import android.graphics.Paint
+import android.graphics.*
 import com.quangtd.qsokoban.domain.game.gamemanager.ImageManager
 import com.quangtd.qsokoban.util.LoadImageUtils
 
@@ -13,8 +11,9 @@ import com.quangtd.qsokoban.util.LoadImageUtils
 class Wall(x: Int, y: Int) : Sprite(x, y) {
     private val imageManager = ImageManager.getInstance()
     private var matrix: Matrix = Matrix()
+    var rect = RectF()
     override fun update() {
-
+        rect.set(xF * widthCell, yF * widthCell, (xF + 1) * widthCell, (yF + 1) * widthCell)
     }
 
     override fun draw(canvas: Canvas, paint: Paint) {

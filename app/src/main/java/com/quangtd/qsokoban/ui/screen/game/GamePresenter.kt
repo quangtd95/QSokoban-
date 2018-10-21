@@ -1,7 +1,6 @@
 package com.quangtd.qsokoban.ui.screen.game
 
 import com.quangtd.qsokoban.domain.game.enums.GameDirection
-import com.quangtd.qsokoban.domain.game.enums.GameKind
 import com.quangtd.qsokoban.domain.game.enums.GameState
 import com.quangtd.qsokoban.domain.game.enums.RenderState
 import com.quangtd.qsokoban.domain.game.gamemanager.GameManager
@@ -25,13 +24,16 @@ class GamePresenter : BasePresenter<GameView>(), GameState.GameStateCallBack, Re
     private lateinit var gameThread: GameThread
 
     private lateinit var gameDataRepository: GameDataRepository
+    private lateinit var _level: Level
+    private var highScore = 0
 
     override fun onInit() {
         gameDataRepository = GameDataRepositoryImpl()
     }
 
     fun setUpGame(level: Level) {
-        var _level = gameDataRepository.loadData(getContext()!!, level.id)
+        _level = gameDataRepository.loadData(getContext()!!, level.id)
+        highScore = _level.savedMove
         gameManager = GameManager(_level)
         gameManager.loadGame(getContext()!!)
         gamePanel = GamePanel(getContext()!!, gameManager, getIView()!!.getSurfaceHolder())
@@ -41,11 +43,12 @@ class GamePresenter : BasePresenter<GameView>(), GameState.GameStateCallBack, Re
         gamePanel.loadGameUI()
         gameThread = GameThread(gameManager, gamePanel)
         gameThread.start()
+        getIView()?.setHeightGame(gamePanel.getHeight())
 
     }
 
     fun move(direction: OnSwipeListener.Direction) {
-        resumeGame()
+        if (!isPlaying()) return
         val canMove = when (direction) {
             OnSwipeListener.Direction.up -> {
                 gameManager.action(GameDirection.UP)
@@ -62,8 +65,23 @@ class GamePresenter : BasePresenter<GameView>(), GameState.GameStateCallBack, Re
         }
         if (canMove) {
             gameManager.increaseMoveStepCount()
-            getIView()?.setMoved(gameManager.getMoveStep())
+            if (gameManager.getMoveStep() > gameManager.getTarget()) {
+                _level.ranking = 2
+            }
+            if (gameManager.getMoveStep() > (gameManager.getTarget() + 10) && _level.ranking >= 2) {
+                _level.ranking = 1
+            }
+            if (gameManager.getMoveStep() <= gameManager.getTarget()) {
+                _level.ranking = 3
+            }
+            _level.savedMove = gameManager.getMoveStep()
+            getIView()?.setMoved(gameManager.getMoveStep(), _level.ranking)
         }
+    }
+
+    private fun isPlaying(): Boolean {
+        if (gameThread.stopFlg) return false
+        return gameThread.renderFlg
     }
 
     fun resumeGame() {
@@ -80,35 +98,37 @@ class GamePresenter : BasePresenter<GameView>(), GameState.GameStateCallBack, Re
 
     override fun onGameStateChangeCallback(gameState: GameState) {
         LogUtils.e(gameState.name)
-//        gamePanel.setState(gameState)
         when (gameState) {
-            GameState.LOADING -> {
-            }
-            GameState.LOADED -> {
-                gameManager.forceChangeGameState(GameState.INTRO)
-            }
-            GameState.INTRO -> {
-//                gamePanel.resetValue()
-            }
-            GameState.PLAYING -> {
-                /*if (level.gameKind == GameKind.TIME_TRIAL) {
-                    (gameManager!! as TimeTrialGameManager).playBackgroundSound()
-                }*/
-//                gameManager!!.resetStartGameTime()
-            }
-            GameState.PAUSE -> {
-            }
-            GameState.STOP -> {
-            }
             GameState.WIN_GAME -> {
                 getIView()?.showWinGameAlert()
-//                updateData()
-                stopGame()
+                updateWinData()
+                pauseGame()
             }
             GameState.LOSE_GAME -> {
                 getIView()?.showLoseGameAlert()
             }
+
+            else -> {//do nothing
+            }
         }
+    }
+
+    private fun updateWinData() {
+        if (_level.savedMove > highScore && _level.isComplete && highScore != 0) {
+            _level.savedMove = highScore
+        } else {
+            highScore = _level.savedMove
+        }
+
+        _level.isComplete = true
+        gameDataRepository.saveData(getContext()!!, _level)
+        val nextLevel: Level = if (_level.id < 1000) {
+            gameDataRepository.loadData(getContext()!!, _level.id + 1)
+        } else {
+            gameDataRepository.loadData(getContext()!!, 1)
+        }
+        nextLevel.isUnlock = true
+        gameDataRepository.saveData(getContext()!!, nextLevel)
     }
 
     override fun changeRenderState(renderState: RenderState) {
@@ -128,6 +148,59 @@ class GamePresenter : BasePresenter<GameView>(), GameState.GameStateCallBack, Re
 
     fun getTarget(): Int {
         return gameManager.getTarget()
+    }
+
+    fun userItem(b: Boolean) {
+        gameThread.chooseBoomFlg = b
+        gamePanel.userBoom(b)
+    }
+
+
+    fun reloadGame() {
+        pauseGame()
+        getIView()?.setMoved(0, 3)
+        getIView()?.setBest(highScore)
+        gameManager.reloadGame()
+        resumeGame()
+    }
+
+    fun moveNextLevel() {
+        val nextLevel: Level = if (_level.id < 1000) {
+            gameDataRepository.loadData(getContext()!!, _level.id + 1)
+        } else {
+            gameDataRepository.loadData(getContext()!!, 1)
+        }
+        getIView()?.moveNextLevel(nextLevel)
+
+    }
+
+    fun useBoom() {
+        pauseGame()
+        userItem(true)
+        getIView()?.chooseWallToDestroy(true)
+    }
+
+    fun cancelUseBoom() {
+        resumeGame()
+        userItem(false)
+        getIView()?.chooseWallToDestroy(false)
+        gameManager.setBoomPosition(null)
+    }
+
+    fun setBoomPosition(x: Float, y: Float) {
+        val point = gamePanel.convertPxToPoint(x, y)
+        gameManager.setBoomPosition(point)
+    }
+
+    fun destroyWall() {
+        if (gameManager.checkHasPlaceBoom()) {
+            gameManager.destroyWall {
+                cancelUseBoom()
+            }
+        } else {
+            getIView()?.placeBoomToDestroyAlert()
+        }
+
     }
 
 }

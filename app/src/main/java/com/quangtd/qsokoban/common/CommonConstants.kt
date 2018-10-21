@@ -7,7 +7,7 @@ package com.quangtd.qsokoban.common
 class CommonConstants {
     companion object {
         const val FPS = 60L
-        const val DEFAULT_FONT = "SerreriaSobria.otf"
+        const val DEFAULT_FONT = "futura_medium_bt.ttf"
         const val INTENT_LEVEL = "level"
         const val COMPLETE_PRX = "complete_%s"
         const val MUTE = "mute"

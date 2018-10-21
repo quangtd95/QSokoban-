@@ -1,16 +1,22 @@
 package com.quangtd.qsokoban.ui.screen.game
 
+import android.content.Context
 import android.content.Intent
+import android.graphics.Point
 import android.os.Bundle
 import android.support.v4.view.GestureDetectorCompat
 import android.view.MotionEvent
 import android.view.SurfaceHolder
+import android.view.View
+import android.view.ViewGroup
 import com.quangtd.qsokoban.R
 import com.quangtd.qsokoban.domain.model.Level
 import com.quangtd.qsokoban.mvpbase.BaseActivity
 import com.quangtd.qsokoban.ui.component.OnSwipeListener
+import com.quangtd.qsokoban.ui.screen.level.LevelActivity
 import com.quangtd.qsokoban.util.DialogUtils
 import com.quangtd.qsokoban.util.LogUtils
+import com.quangtd.qsokoban.util.ScreenUtils
 import kotlinx.android.synthetic.main.activity_game.*
 
 class GameActivity : BaseActivity<GameView, GamePresenter>(), GameView, SurfaceHolder.Callback {
@@ -21,6 +27,8 @@ class GameActivity : BaseActivity<GameView, GamePresenter>(), GameView, SurfaceH
     private var target: Int = 0
     private var highScore: Int = 0
     private var ranking: Int = 3
+    private var best: Int = 0
+    private var chooseBoomFlg = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,9 +39,10 @@ class GameActivity : BaseActivity<GameView, GamePresenter>(), GameView, SurfaceH
     }
 
     private fun initValues() {
-        level = Level(id = intent.getIntExtra("level", 1))
+        level = intent.extras.getSerializable("level") as Level
         moveStep = 0
         highScore = level.savedMove
+        best = level.savedMove
         ratingBar.rating = ranking.toFloat()
 
     }
@@ -42,6 +51,14 @@ class GameActivity : BaseActivity<GameView, GamePresenter>(), GameView, SurfaceH
         txtMove.text = moveStep.toString()
         txtTarget.text = target.toString()
         txtLevel.text = String.format(getString(R.string.level_string), level.id)
+        txtBest.text = best.toString()
+        if (level.isComplete) {
+            imbNext.visibility = View.VISIBLE
+        } else {
+            imbNext.visibility = View.GONE
+        }
+        llTool.visibility = View.VISIBLE
+        llUserBoom.visibility = View.INVISIBLE
     }
 
     private fun initAction() {
@@ -51,7 +68,40 @@ class GameActivity : BaseActivity<GameView, GamePresenter>(), GameView, SurfaceH
                 getPresenter(this@GameActivity).move(direction)
                 return true
             }
+
+            override fun onDown(e: MotionEvent?): Boolean {
+                if (e == null) return false
+                if (!chooseBoomFlg) return false
+                getPresenter(this@GameActivity).setBoomPosition(e.x, e.y - groupTop.height - txtLevel.height)
+                return true
+            }
         })
+        imbBoom.setOnClickListener {
+            getPresenter(this).useBoom()
+        }
+        imbGate.setOnClickListener { }
+        imbHint.setOnClickListener { }
+        imbNext.setOnClickListener {
+            getPresenter(this).moveNextLevel()
+        }
+        imbReload.setOnClickListener {
+            getPresenter(this).pauseGame()
+            DialogUtils.showReload(this, {
+                chooseWallToDestroy(false)
+                getPresenter(this).reloadGame()
+                getPresenter(this).resumeGame()
+            }, {
+                getPresenter(this).resumeGame()
+            })
+
+        }
+        imbPause.setOnClickListener { onBackPressed() }
+        btnCancelBoom.setOnClickListener {
+            getPresenter(this).cancelUseBoom()
+        }
+        btnUseBoom.setOnClickListener {
+            getPresenter(this).destroyWall()
+        }
     }
 
     override fun surfaceChanged(p0: SurfaceHolder?, p1: Int, p2: Int, p3: Int) {
@@ -69,17 +119,8 @@ class GameActivity : BaseActivity<GameView, GamePresenter>(), GameView, SurfaceH
         LogUtils.e("surfaceCreated")
         if (!isPause) {
             getPresenter(this@GameActivity).setUpGame(level)
-
             target = getPresenter(this).getTarget()
             txtTarget.text = target.toString()
-            /*if (getPresenter(this).canNext()) {
-                next.visibility = View.VISIBLE
-                next.setOnClickListener {
-                    moveNextLevel()
-                }
-            } else {
-                next.visibility = View.INVISIBLE
-            }*/
         } else {
             getPresenter(this).resumeGame()
         }
@@ -104,12 +145,12 @@ class GameActivity : BaseActivity<GameView, GamePresenter>(), GameView, SurfaceH
     override fun onBackPressed() {
         uiChangeListener()
         getPresenter(this@GameActivity).pauseGame()
-//        DialogUtils.showExitConfirm(this@GameActivity, {
-//            LevelActivity.startLevelActivity(this@GameActivity, Category(level!!.gameKind.id, level!!.gameKind))
-//            finish()
-//        }, {
-//            getPresenter(this@GameActivity).resumeGame()
-//        })
+        DialogUtils.showExitConfirm(this@GameActivity, {
+            LevelActivity.startLevelActivity(this@GameActivity)
+            finish()
+        }, {
+            getPresenter(this@GameActivity).resumeGame()
+        })
 
     }
 
@@ -121,17 +162,20 @@ class GameActivity : BaseActivity<GameView, GamePresenter>(), GameView, SurfaceH
     override fun showWinGameAlert() {
         runOnUiThread {
             uiChangeListener()
-            DialogUtils.showError(this, "you win") {
-                moveNextLevel()
+            imbNext.visibility = View.VISIBLE
+            DialogUtils.showWin(this, "you win") {
+                getPresenter(this).moveNextLevel()
             }
         }
     }
 
-    private fun moveNextLevel() {
-        val intent = Intent(this, GameActivity::class.java)
-        intent.putExtra("level", level.id + 1)
-        startActivity(intent)
+    override fun moveNextLevel(nextLevel: Level) {
+        GameActivity.startGameActivity(this, nextLevel)
         finish()
+    }
+
+    override fun setBest(savedMove: Int) {
+        txtBest.text = savedMove.toString()
     }
 
     override fun showLoseGameAlert() {
@@ -142,15 +186,50 @@ class GameActivity : BaseActivity<GameView, GamePresenter>(), GameView, SurfaceH
         }
     }
 
-    override fun setMoved(moveStep: Int) {
+    override fun setMoved(moveStep: Int, ranking: Int) {
         txtMove.text = moveStep.toString()
-        if (moveStep > target && ranking >= 3) {
-            ranking = 2
-            ratingBar.rating = ranking.toFloat()
+        ratingBar.rating = ranking.toFloat()
+    }
+
+    override fun setHeightGame(height: Int) {
+        val sfHeight = getSurfaceHeight()
+        val params = sokobanView.layoutParams as ViewGroup.MarginLayoutParams
+        params.height = height
+        sokobanView.layoutParams = params
+        sokobanView.invalidate()
+        /*if (margin > AdSize.BANNER.height) {
+            initAdMod()
+        } else {
+            LogUtils.e("size not compatible : $margin and ${AdSize.BANNER.height}")
+        }*/
+    }
+
+    override fun getSurfaceHeight(): Int {
+        return ScreenUtils.getHeightScreen(this) - groupTop.height - txtLevel.height
+    }
+
+    override fun chooseWallToDestroy(b: Boolean) {
+        runOnUiThread {
+            chooseBoomFlg = b
+            llTool.visibility = if (b) View.INVISIBLE else View.VISIBLE
+            llUserBoom.visibility = if (b) View.VISIBLE else View.INVISIBLE
+            if (b) {
+                getPresenter(this).resumeGame()
+            }
         }
-        if (moveStep > target * 2 && ranking >= 2) {
-            ranking = 1
-            ratingBar.rating = ranking.toFloat()
+    }
+
+    override fun placeBoomToDestroyAlert() {
+        DialogUtils.showPlaceBoomToDestroy(this)
+    }
+
+    companion object {
+        fun startGameActivity(context: Context, level: Level) {
+            val intent = Intent(context, GameActivity::class.java)
+            val bundle = Bundle()
+            bundle.putSerializable("level", level)
+            intent.putExtras(bundle)
+            context.startActivity(intent)
         }
     }
 }

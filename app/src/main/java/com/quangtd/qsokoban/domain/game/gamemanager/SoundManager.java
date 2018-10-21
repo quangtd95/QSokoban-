@@ -1,4 +1,4 @@
-package com.quangtd.qmazes.game.gamemanager;
+package com.quangtd.qsokoban.domain.game.gamemanager;
 
 import android.content.Context;
 import android.media.AudioAttributes;
@@ -6,7 +6,8 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
 
-import com.quangtd.qmazes.R;
+
+import com.quangtd.qsokoban.R;
 
 import static android.content.Context.AUDIO_SERVICE;
 
@@ -70,7 +71,7 @@ public class SoundManager {
         // Chỉ số âm lượng tối đa của loại luồng nhạc cụ thể (streamType).
         float maxVolumeIndex = (float) audioManager.getStreamMaxVolume(streamType);
         // Âm lượng  (0 --> 1)
-        this.volume = currentVolumeIndex / maxVolumeIndex;
+        this.volume = 1;//currentVolumeIndex / maxVolumeIndex;
         // Với phiên bản Android SDK >= 21
         if (Build.VERSION.SDK_INT >= 21) {
 
@@ -94,11 +95,11 @@ public class SoundManager {
         this.soundPool.setOnLoadCompleteListener((soundPool, sampleId, status) -> loaded = true);
 
         soundIdTouch = this.soundPool.load(context, R.raw.toggle_switch, 1);
-        soundIdBulletDestroy = this.soundPool.load(context, R.raw.bullet_destroy, 1);
-        soundIdBulletShoot = this.soundPool.load(context, R.raw.bullet_shoot, 1);
-        soundIdPlayerDestroy = this.soundPool.load(context, R.raw.died, 1);
-        soundIdClockTicking = this.soundPool.load(context, R.raw.clock_ticking, 1);
-        soundIdTimeUp = this.soundPool.load(context, R.raw.time_up, 1);
+//        soundIdBulletDestroy = this.soundPool.load(context, R.raw.bullet_destroy, 1);
+//        soundIdBulletShoot = this.soundPool.load(context, R.raw.bullet_shoot, 1);
+//        soundIdPlayerDestroy = this.soundPool.load(context, R.raw.died, 1);
+//        soundIdClockTicking = this.soundPool.load(context, R.raw.clock_ticking, 1);
+//        soundIdTimeUp = this.soundPool.load(context, R.raw.time_up, 1);
     }
 
     public void playTouchSound() {
