@@ -18,7 +18,7 @@ class GameDataRepositoryImpl : GameDataRepository {
 
     private var sharedPreferencesUtils: SharedPreferencesUtils = SharedPreferencesUtils.getInstance()
 
-    override fun loadData(context: Context): ArrayList<Level> {
+    override fun loadGameData(context: Context): ArrayList<Level> {
         //khởi tạo list các level
         val levelList = ArrayList<Level>()
         val data = sharedPreferencesUtils.getString(context, CommonConstants.KEY_GAME_DATA)
@@ -28,7 +28,7 @@ class GameDataRepositoryImpl : GameDataRepository {
                 val l = Level(id = i, gameKind = GameKind.CLASSIC.value, isComplete = false, isUnlock = (i == 1), savedMove = 0, ranking = 0)
                 levelList.add(l)
             }
-            saveData(context, levelList)
+            saveGameData(context, levelList)
         } else {
             val listType: Type = object : TypeToken<ArrayList<Level>>() {}.type
             levelList.addAll(Gson().fromJson(data, listType))
@@ -36,19 +36,39 @@ class GameDataRepositoryImpl : GameDataRepository {
         return levelList
     }
 
-    override fun saveData(context: Context, level: Level) {
-        val levelList = loadData(context)
+    override fun saveGameData(context: Context, level: Level) {
+        val levelList = loadGameData(context)
         levelList[level.id - 1] = level
-        saveData(context, levelList)
+        saveGameData(context, levelList)
     }
 
-    override fun saveData(context: Context, levelList: ArrayList<Level>) {
+    override fun saveGameData(context: Context, levelList: ArrayList<Level>) {
         val data: String = Gson().toJson(levelList)
         sharedPreferencesUtils.setString(context, CommonConstants.KEY_GAME_DATA, data)
     }
 
     // id bắt đầu từ 1 nhé.
-    override fun loadData(context: Context, id: Int): Level {
-        return loadData(context)[id - 1]
+    override fun loadGameData(context: Context, id: Int): Level {
+        return loadGameData(context)[id - 1]
+    }
+
+    override fun loadBoomNumber(context: Context): Int {
+        val boom: Int = sharedPreferencesUtils.getInt(context, CommonConstants.KEY_BOOM_DATA)
+        if (boom == -1) return CommonConstants.DEAULT_BOOM
+        return boom
+    }
+
+    override fun saveBoomNumber(context: Context, boom: Int) {
+        sharedPreferencesUtils.setInt(context, CommonConstants.KEY_BOOM_DATA, boom)
+    }
+
+    override fun loadCoin(context: Context): Int {
+        val coin = sharedPreferencesUtils.getInt(context, CommonConstants.KEY_COIN_DATA)
+        if (coin == -1) return 0
+        return coin
+    }
+
+    override fun saveCoin(context: Context, coin: Int) {
+        sharedPreferencesUtils.setInt(context, CommonConstants.KEY_COIN_DATA, coin)
     }
 }

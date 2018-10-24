@@ -8,8 +8,13 @@ import com.quangtd.qsokoban.domain.model.Level
  * on 10/14/2018.
  */
 interface GameDataRepository {
-    fun loadData(context: Context): ArrayList<Level>
-    fun saveData(context: Context, level: Level)
-    fun saveData(context: Context, levelList: ArrayList<Level>)
-    fun loadData(context: Context, id: Int): Level
+    fun loadGameData(context: Context): ArrayList<Level>
+    fun saveGameData(context: Context, level: Level)
+    fun saveGameData(context: Context, levelList: ArrayList<Level>)
+    fun loadGameData(context: Context, id: Int): Level
+    fun loadBoomNumber(context: Context): Int
+    fun saveBoomNumber(context: Context, boom: Int)
+    fun loadCoin(context: Context): Int
+    fun saveCoin(context: Context, coin: Int)
+
 }

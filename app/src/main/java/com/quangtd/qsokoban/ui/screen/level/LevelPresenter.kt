@@ -21,7 +21,7 @@ class LevelPresenter : BasePresenter<LevelView>() {
     }
 
     fun loadData() {
-        val levelList = repository.loadData(getContext()!!)
+        val levelList = repository.loadGameData(getContext()!!)
         levelAdapter.setItems(levelList)
         getIView()?.onLoadedData()
         getIView()?.scrollToCurrentGame(levelList.findLast { it.isUnlock }?.id ?: 1)

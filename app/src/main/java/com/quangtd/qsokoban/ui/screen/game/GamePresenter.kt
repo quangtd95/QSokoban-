@@ -1,5 +1,6 @@
 package com.quangtd.qsokoban.ui.screen.game
 
+import com.quangtd.qsokoban.common.CommonConstants
 import com.quangtd.qsokoban.domain.game.enums.GameDirection
 import com.quangtd.qsokoban.domain.game.enums.GameState
 import com.quangtd.qsokoban.domain.game.enums.RenderState
@@ -32,7 +33,7 @@ class GamePresenter : BasePresenter<GameView>(), GameState.GameStateCallBack, Re
     }
 
     fun setUpGame(level: Level) {
-        _level = gameDataRepository.loadData(getContext()!!, level.id)
+        _level = gameDataRepository.loadGameData(getContext()!!, level.id)
         highScore = _level.savedMove
         gameManager = GameManager(_level)
         gameManager.loadGame(getContext()!!)
@@ -44,6 +45,8 @@ class GamePresenter : BasePresenter<GameView>(), GameState.GameStateCallBack, Re
         gameThread = GameThread(gameManager, gamePanel)
         gameThread.start()
         getIView()?.setHeightGame(gamePanel.getHeight())
+        getIView()?.setBoomNumber(gameDataRepository.loadBoomNumber(getContext()!!))
+        getIView()?.setCoinNumber(gameDataRepository.loadCoin(getContext()!!))
 
     }
 
@@ -100,7 +103,15 @@ class GamePresenter : BasePresenter<GameView>(), GameState.GameStateCallBack, Re
         LogUtils.e(gameState.name)
         when (gameState) {
             GameState.WIN_GAME -> {
-                getIView()?.showWinGameAlert()
+                if (_level.isComplete) {
+                    if (highScore != 0 && highScore > _level.savedMove) {
+                        getIView()?.showWinGameBonusCoinAlert(getCoinBonus())
+                    } else {
+                        getIView()?.showWinGameAlert()
+                    }
+                } else {
+                    getIView()?.showWinGameBonusCoinAlert(getCoinBonus())
+                }
                 updateWinData()
                 pauseGame()
             }
@@ -113,22 +124,51 @@ class GamePresenter : BasePresenter<GameView>(), GameState.GameStateCallBack, Re
         }
     }
 
+    private fun getCoinBonus(): Int {
+        var coinBonus = 0
+        if (_level.ranking == 3) {
+            coinBonus = CommonConstants.REWARD_COIN_3
+        }
+        if (_level.ranking == 2) {
+            coinBonus = CommonConstants.REWARD_COIN_2
+        }
+        if (_level.ranking == 1) {
+            coinBonus = CommonConstants.REWARD_COIN_1
+        }
+        return coinBonus
+    }
+
     private fun updateWinData() {
+        var coinBonus = 0
         if (_level.savedMove > highScore && _level.isComplete && highScore != 0) {
             _level.savedMove = highScore
         } else {
             highScore = _level.savedMove
+            coinBonus = getCoinBonus()
+        }
+        if (!_level.isComplete) {
+            coinBonus = getCoinBonus()
+        }
+        gameDataRepository.saveCoin(getContext()!!, gameDataRepository.loadCoin(getContext()!!) + coinBonus)
+        if (gameDataRepository.loadCoin(getContext()!!) >= CommonConstants.BOOM_PRICE) {
+            gameDataRepository.saveBoomNumber(getContext()!!, gameDataRepository.loadBoomNumber(getContext()!!) + 1)
+            gameDataRepository.saveCoin(getContext()!!, gameDataRepository.loadCoin(getContext()!!) - CommonConstants.BOOM_PRICE)
+            getIView()?.setBoomNumber(gameDataRepository.loadBoomNumber(getContext()!!))
+            getIView()?.showRewardBoom()
         }
 
+        getIView()?.setCoinNumber(gameDataRepository.loadCoin(getContext()!!))
+
+
         _level.isComplete = true
-        gameDataRepository.saveData(getContext()!!, _level)
+        gameDataRepository.saveGameData(getContext()!!, _level)
         val nextLevel: Level = if (_level.id < 1000) {
-            gameDataRepository.loadData(getContext()!!, _level.id + 1)
+            gameDataRepository.loadGameData(getContext()!!, _level.id + 1)
         } else {
-            gameDataRepository.loadData(getContext()!!, 1)
+            gameDataRepository.loadGameData(getContext()!!, 1)
         }
         nextLevel.isUnlock = true
-        gameDataRepository.saveData(getContext()!!, nextLevel)
+        gameDataRepository.saveGameData(getContext()!!, nextLevel)
     }
 
     override fun changeRenderState(renderState: RenderState) {
@@ -166,18 +206,22 @@ class GamePresenter : BasePresenter<GameView>(), GameState.GameStateCallBack, Re
 
     fun moveNextLevel() {
         val nextLevel: Level = if (_level.id < 1000) {
-            gameDataRepository.loadData(getContext()!!, _level.id + 1)
+            gameDataRepository.loadGameData(getContext()!!, _level.id + 1)
         } else {
-            gameDataRepository.loadData(getContext()!!, 1)
+            gameDataRepository.loadGameData(getContext()!!, 1)
         }
         getIView()?.moveNextLevel(nextLevel)
 
     }
 
     fun useBoom() {
-        pauseGame()
-        userItem(true)
-        getIView()?.chooseWallToDestroy(true)
+        if (gameDataRepository.loadBoomNumber(getContext()!!) > 0) {
+            pauseGame()
+            userItem(true)
+            getIView()?.chooseWallToDestroy(true)
+        } else {
+            getIView()?.notEnoughBoomAlert()
+        }
     }
 
     fun cancelUseBoom() {
@@ -193,14 +237,22 @@ class GamePresenter : BasePresenter<GameView>(), GameState.GameStateCallBack, Re
     }
 
     fun destroyWall() {
-        if (gameManager.checkHasPlaceBoom()) {
-            gameManager.destroyWall {
-                cancelUseBoom()
+        if (gameDataRepository.loadBoomNumber(getContext()!!) > 0) {
+            if (gameManager.checkHasPlaceBoom()) {
+                gameDataRepository.saveBoomNumber(getContext()!!, gameDataRepository.loadBoomNumber(getContext()!!) - 1)
+                gameManager.destroyWall {
+                    cancelUseBoom()
+                }
+                getIView()?.setBoomNumber(gameDataRepository.loadBoomNumber(getContext()!!))
+            } else {
+                getIView()?.placeBoomToDestroyAlert()
             }
         } else {
-            getIView()?.placeBoomToDestroyAlert()
+            getIView()?.notEnoughBoomAlert()
         }
 
     }
+
+    fun isWin(): Boolean = gameManager.isWin()
 
 }

@@ -8,7 +8,6 @@ import com.quangtd.qsokoban.domain.game.enums.GameDirection
 import com.quangtd.qsokoban.domain.game.enums.GameState
 import com.quangtd.qsokoban.domain.game.enums.RenderState
 import com.quangtd.qsokoban.domain.model.*
-import com.quangtd.qsokoban.util.LogUtils
 import com.quangtd.qsokoban.util.ScreenUtils
 
 /**
@@ -107,12 +106,21 @@ class GameManager(private var level: Level) : IGameManager {
                             player = Player(col, row, map)
                             player.widthCell = widthCell
                         }
+                        '*'->{
+                            val destination = Destination(col, row)
+                            destination.widthCell = widthCell
+                            destList.add(destination)
+                            val box = Box(col, row)
+                            box.map = map
+                            box.widthCell = widthCell
+                            boxList.add(box)
+                        }
                         else -> {
                             // do-nothing
                         }
                     }
                     when (colData) {
-                        '@', '$', '.', '+', ' ' -> {
+                        '@', '$', '.', '+', ' ' ,'*'-> {
                             if (rowData.substring(0, col).contains("#") && rowData.substring(col, rowData.length).contains("#")) {
                                 groundList.add(Ground(col, row).apply {
                                     this.widthCell = this@GameManager.widthCell
@@ -158,7 +166,9 @@ class GameManager(private var level: Level) : IGameManager {
         }
         boom?.update()
         if (isWin()) {
-            forceChangeGameState(GameState.WIN_GAME)
+            if (gameState != GameState.WIN_GAME) {
+                forceChangeGameState(GameState.WIN_GAME)
+            }
         }
     }
 
@@ -167,7 +177,7 @@ class GameManager(private var level: Level) : IGameManager {
         return player.move(direction)
     }
 
-    private fun isWin(): Boolean {
+    override fun isWin(): Boolean {
         map.boxList.forEach {
             if (!it.isDone()) return false
         }

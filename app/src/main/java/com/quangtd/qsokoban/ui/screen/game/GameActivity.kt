@@ -2,7 +2,6 @@ package com.quangtd.qsokoban.ui.screen.game
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Point
 import android.os.Bundle
 import android.support.v4.view.GestureDetectorCompat
 import android.view.MotionEvent
@@ -65,6 +64,7 @@ class GameActivity : BaseActivity<GameView, GamePresenter>(), GameView, SurfaceH
         sokobanView.getSurfaceHolder().addCallback(this)
         mDetector = GestureDetectorCompat(this, object : OnSwipeListener() {
             override fun onSwipe(direction: Direction): Boolean {
+                if (getPresenter(this@GameActivity).isWin() || chooseBoomFlg) return false
                 getPresenter(this@GameActivity).move(direction)
                 return true
             }
@@ -77,7 +77,9 @@ class GameActivity : BaseActivity<GameView, GamePresenter>(), GameView, SurfaceH
             }
         })
         imbBoom.setOnClickListener {
-            getPresenter(this).useBoom()
+            if (!getPresenter(this).isWin()) {
+                getPresenter(this).useBoom()
+            }
         }
         imbGate.setOnClickListener { }
         imbHint.setOnClickListener { }
@@ -163,7 +165,17 @@ class GameActivity : BaseActivity<GameView, GamePresenter>(), GameView, SurfaceH
         runOnUiThread {
             uiChangeListener()
             imbNext.visibility = View.VISIBLE
-            DialogUtils.showWin(this, "you win") {
+            DialogUtils.showWin(this, getString(R.string.you_win)) {
+                getPresenter(this).moveNextLevel()
+            }
+        }
+    }
+
+    override fun showWinGameBonusCoinAlert(coinBonus: Int) {
+        runOnUiThread {
+            uiChangeListener()
+            imbNext.visibility = View.VISIBLE
+            DialogUtils.showWinBonusCoin(this, getString(R.string.you_win), coinBonus) {
                 getPresenter(this).moveNextLevel()
             }
         }
@@ -182,7 +194,7 @@ class GameActivity : BaseActivity<GameView, GamePresenter>(), GameView, SurfaceH
         runOnUiThread {
             getPresenter(this).pauseGame()
             uiChangeListener()
-            DialogUtils.showError(this, "you loose") {}
+            DialogUtils.showError(this, getString(R.string.you_loose)) {}
         }
     }
 
@@ -206,6 +218,30 @@ class GameActivity : BaseActivity<GameView, GamePresenter>(), GameView, SurfaceH
 
     override fun getSurfaceHeight(): Int {
         return ScreenUtils.getHeightScreen(this) - groupTop.height - txtLevel.height
+    }
+
+    override fun setBoomNumber(loadBoomNumber: Int) {
+        runOnUiThread {
+            txtBoomCount.text = loadBoomNumber.toString()
+        }
+    }
+
+    override fun setCoinNumber(loadCoin: Int) {
+        runOnUiThread {
+            txtCoin.text = loadCoin.toString()
+        }
+    }
+
+    override fun notEnoughBoomAlert() {
+        runOnUiThread {
+            DialogUtils.showNotEnoughBoomAlert(this)
+        }
+    }
+
+    override fun showRewardBoom() {
+        runOnUiThread {
+            DialogUtils.showRewardBoom(this)
+        }
     }
 
     override fun chooseWallToDestroy(b: Boolean) {

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Q Sokoban</string>
+    <string name="level_string">Màn %d</string>
+    <string name="reload">chơi lại?</string>
+    <string name="OK">OK</string>
+    <string name="cancel">Hủy</string>
+    <string name="lock_level_warning">Màn chơi chưa được mở khóa</string>
+    <string name="exit_game_confirm">Thoát game?</string>
+    <string name="next">Tiếp tục</string>
+    <string name="place_boom">Hãy chọn 1 bức tường</string>
+    <string name="not_enough_boom">Bạn không có đủ boom</string>
+    <string name="receive_more_boom">Bạn nhận được thêm 1 quả boom</string>
+    <string name="you_win">Chiến thắng!</string>
+    <string name="you_loose">Thua rồi ...</string>
+    <string name="ch_n_1_b_c_t_ng_v_ph_h_y_n">Chọn 1 bức tường và phá hủy nó</string>
+    <string name="kh_ng_d_ng">không dùng</string>
+    <string name="ph_h_y">phá hủy</string>
+</resources>

@@ -23,4 +23,5 @@ interface IGameManager {
     fun setBoomPosition(point: Point?)
     fun destroyWall(l: (Unit) -> Unit)
     fun checkHasPlaceBoom(): Boolean
+    fun isWin(): Boolean
 }

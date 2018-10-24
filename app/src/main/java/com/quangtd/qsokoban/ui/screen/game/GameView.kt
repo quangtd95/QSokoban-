@@ -19,4 +19,9 @@ interface GameView : IBaseView {
     fun setBest(savedMove: Int)
     fun chooseWallToDestroy(b: Boolean)
     fun placeBoomToDestroyAlert()
+    fun showWinGameBonusCoinAlert(coinBonus: Int)
+    fun setBoomNumber(loadBoomNumber: Int)
+    fun setCoinNumber(loadCoin: Int)
+    fun notEnoughBoomAlert()
+    fun showRewardBoom()
 }

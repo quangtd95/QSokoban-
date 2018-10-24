@@ -5,7 +5,14 @@
     <string name="OK">OK</string>
     <string name="cancel">CANCEL</string>
     <string name="lock_level_warning">This level is locked. Please complete the previous level</string>
-    <string name="exit_game_confirm">are you sure to exit game ? process of current game will be lost!</string>
+    <string name="exit_game_confirm"> exit game ?</string>
     <string name="next">NEXT</string>
     <string name="place_boom">Please choose one wall</string>
+    <string name="not_enough_boom">You haven\'t enough boom</string>
+    <string name="receive_more_boom">you\'ve received 1 more boom</string>
+    <string name="you_win">YOU WIN!</string>
+    <string name="you_loose">you loose...</string>
+    <string name="ch_n_1_b_c_t_ng_v_ph_h_y_n">Choose a wall and destroy</string>
+    <string name="kh_ng_d_ng">cancel</string>
+    <string name="ph_h_y">destroy</string>
 </resources>

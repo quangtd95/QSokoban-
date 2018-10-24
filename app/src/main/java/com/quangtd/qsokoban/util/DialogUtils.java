@@ -119,4 +119,35 @@ public class DialogUtils {
         prettyDialog.setTitle(context.getString(R.string.place_boom));
         prettyDialog.show();
     }
+
+    public static void showWinBonusCoin(@NotNull Context context, @NotNull String title, int coin, PrettyDialogCallback onClickNext) {
+        PrettyDialog prettyDialog = new PrettyDialog(context);
+        prettyDialog.setCancelable(true);
+        prettyDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        prettyDialog.setMessage("coin + " + coin);
+        prettyDialog.setTitle(title).setIcon(R.drawable.ic_win)
+                .addButton(context.getString(R.string.next), R.color.pdlg_color_black, R.color.pdlg_color_green, () -> {
+                    prettyDialog.dismiss();
+                    onClickNext.onClick();
+                })
+                .show();
+    }
+
+    public static void showNotEnoughBoomAlert(@NotNull Context context) {
+        PrettyDialog prettyDialog = new PrettyDialog(context);
+        prettyDialog.setCancelable(true);
+        prettyDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        prettyDialog.setIcon(R.drawable.boom);
+        prettyDialog.setTitle(context.getString(R.string.not_enough_boom));
+        prettyDialog.show();
+    }
+
+    public static void showRewardBoom(@NotNull Context context) {
+        PrettyDialog prettyDialog = new PrettyDialog(context);
+        prettyDialog.setCancelable(true);
+        prettyDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        prettyDialog.setTitle(context.getString(R.string.receive_more_boom)).setIcon(R.drawable.boom)
+                .addButton(context.getString(R.string.next), R.color.pdlg_color_black, R.color.pdlg_color_green, prettyDialog::dismiss)
+                .show();
+    }
 }

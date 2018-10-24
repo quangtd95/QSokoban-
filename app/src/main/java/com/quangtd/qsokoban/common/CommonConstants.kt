@@ -13,5 +13,12 @@ class CommonConstants {
         const val MUTE = "mute"
         const val MAP_NAME_TEMPLATE = "mapData%d.json"
         const val KEY_GAME_DATA = "sokoban_data"
+        const val KEY_BOOM_DATA = "boom"
+        const val KEY_COIN_DATA = "coin"
+        const val REWARD_COIN_3 = 15
+        const val REWARD_COIN_2 = 10
+        const val REWARD_COIN_1 = 5
+        const val DEAULT_BOOM = 2
+        const val BOOM_PRICE = 50
     }
 }

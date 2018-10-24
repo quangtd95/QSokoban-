@@ -159,22 +159,24 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/_50sdp"
         android:layout_below="@id/sokobanView"
-        android:layout_margin="@dimen/_5sdp"
-        android:gravity="right"
+        android:layout_alignEnd="@+id/imbPause"
+        android:layout_marginTop="7dp"
+        android:layout_marginBottom="@dimen/_5sdp"
         android:orientation="horizontal"
-        android:visibility="invisible">
+        android:visibility="visible">
 
         <RelativeLayout
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginStart="@dimen/_5sdp"
-            android:layout_weight="1">
+            android:layout_marginEnd="@dimen/_10sdp">
 
             <TextView
                 android:id="@+id/lbBest"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
+                android:gravity="center_horizontal"
                 android:text="BEST"
                 android:textColor="@color/pdlg_color_white"
                 android:textSize="@dimen/_10sdp" />
@@ -189,6 +191,35 @@
                 android:textSize="@dimen/_25sdp"
                 tools:text="200" />
         </RelativeLayout>
+
+        <ImageView
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:scaleType="centerInside"
+            android:src="@drawable/coin" />
+
+        <TextView
+            android:id="@+id/txtCoin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:padding="@dimen/_5sdp"
+            android:text="2000"
+            android:textColor="@color/colorWhite"
+            android:textSize="@dimen/_20sdp" />
+
+        <TextView
+            android:id="@+id/txtBoomCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="end"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/_20sdp"
+            android:textStyle="bold"
+            tools:text="10" />
 
         <ImageButton
             android:id="@+id/imbBoom"
@@ -208,7 +239,8 @@
             android:background="@color/bgGame"
             android:padding="@dimen/_5sdp"
             android:scaleType="centerInside"
-            android:src="@drawable/gate" />
+            android:src="@drawable/gate"
+            android:visibility="gone" />
 
         <ImageButton
             android:id="@+id/imbHint"
@@ -218,7 +250,9 @@
             android:background="@color/bgGame"
             android:padding="@dimen/_5sdp"
             android:scaleType="centerInside"
-            android:src="@drawable/hint" />
+            android:src="@drawable/hint"
+            android:visibility="gone" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -228,7 +262,8 @@
         android:layout_below="@id/sokobanView"
         android:layout_margin="@dimen/_5sdp"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:visibility="gone">
 
         <TextView
             android:id="@+id/txtUserBoom"
@@ -239,7 +274,7 @@
             android:gravity="center_vertical"
             android:maxLines="2"
             android:padding="@dimen/_5sdp"
-            android:text="Chọn 1 bức tường và phá hủy nó"
+            android:text="@string/ch_n_1_b_c_t_ng_v_ph_h_y_n"
             android:textColor="@color/colorWhite" />
 
         <Button
@@ -248,7 +283,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/_5sdp"
             android:background="@color/bgGame"
-            android:text="không dùng"
+            android:text="@string/kh_ng_d_ng"
             android:textAllCaps="false" />
 
         <Button
@@ -257,7 +292,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/_5sdp"
             android:background="@color/bgGame"
-            android:text="phá hủy" />
+            android:text="@string/ph_h_y" />
 
 
     </LinearLayout>
